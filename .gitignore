@@ -1,3 +1,6 @@
+#Configuration
+constants/PrivateConstants.js
+
 # OSX
 #
 .DS_Store

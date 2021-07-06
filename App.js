@@ -13,7 +13,9 @@ import {enableScreens} from 'react-native-screens';
 import {createStore, combineReducers} from 'redux';
 import recipeReducer from './store/reducers/recipe';
 import {Provider} from 'react-redux';
-import firestore from '@react-native-firebase/firestore'
+import * as firebase from 'firebase/app'
+import 'firebase/firestore'
+// import firestore from '@react-native-firebase/firestore'
 
 
 /*some statement which has to be made in the app.js file to use react-native-screens*/
@@ -34,14 +36,30 @@ const rootReducer = combineReducers({
 
 const store = createStore(rootReducer);
 
-// const userName = firestore().collection("users").doc(
-//     "Ct9QDT8ZZTOOXcMd4x0B")
+const firebaseConfig = {
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  databaseURL: 'https://project-id.firebaseio.com',
+  projectId: 'project-id',
+  storageBucket: 'project-id.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: 'app-id',
+  measurementId: 'G-measurement-id',
+};
+
+firebase.initializeApp(firebaseConfig);
+
+
+const dbh = firebase.firestore();
+
+var userName = dbh.collection("users").doc("Ct9QDT8ZZTOOXcMd4x0B").get()
+
 
 export default function App() {
 
   return (
     <SafeAreaView>
-      <Text style={styles.text}>Hi there</Text>
+      <Text style={styles.text}>Hi there {userName}</Text>
     </SafeAreaView>
   );
 };
