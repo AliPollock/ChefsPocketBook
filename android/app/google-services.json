@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "350039348428",
+    "project_id": "chefspocketbook",
+    "storage_bucket": "chefspocketbook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350039348428:android:15b7a31fc99689bebc1e69",
+        "android_client_info": {
+          "package_name": "com.chefspocketbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350039348428-q162095bbnsioeq76gu51990phapa2r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN1ubyfz5zn9XARcTIzN257fWDnX3FP4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350039348428-q162095bbnsioeq76gu51990phapa2r9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

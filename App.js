@@ -1,13 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, {useState} from 'react';
+import * as Font from 'expo-font';
 import {
   SafeAreaView,
   ScrollView,
@@ -17,96 +9,51 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {enableScreens} from 'react-native-screens';
+import {createStore, combineReducers} from 'redux';
+import recipeReducer from './store/reducers/recipe';
+import {Provider} from 'react-redux';
+import firestore from '@react-native-firebase/firestore'
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+/*some statement which has to be made in the app.js file to use react-native-screens*/
+enableScreens();
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'open-sans': require('.//assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('.//assets/fonts/OpenSans-Bold.ttf'),
+  });
 };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+//reducer which will hold the state of the app
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+const rootReducer = combineReducers({
+  recipes: recipeReducer
+});
+
+const store = createStore(rootReducer);
+
+// const userName = firestore().collection("users").doc(
+//     "Ct9QDT8ZZTOOXcMd4x0B")
+
+export default function App() {
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView>
+      <Text style={styles.text}>Hi there</Text>
     </SafeAreaView>
   );
 };
 
+
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
+  text: {
     fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    textAlign: 'center'
+  }
+
 });
 
-export default App;
