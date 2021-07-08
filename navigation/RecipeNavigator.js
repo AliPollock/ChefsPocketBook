@@ -70,20 +70,21 @@ const AuthNavigator = createStackNavigator({
     SignUp: {
         screen: SignUpScreen,
         navigationOptions: {}
-    }
+    },
+},{
+        defaultNavigationOptions:defaultStackNavOptions
 })
 
-const MainNavigator = createAppContainer(
-    createSwitchNavigator(
-        {
-            AuthLoading: LandingScreen,
-            App: RecipeNavigator,
-            Auth: AuthNavigator,
-        },
-        {
-            initialRouteName: 'AuthLoading',
-        }
-    )
+
+const MainNavigator = createSwitchNavigator(
+    {
+        // AuthLoading: LandingScreen,
+        Auth: AuthNavigator,
+        App: RecipeNavigator
+    },
+    {
+        initialRouteName: 'Auth',
+    }
 );
 
 export default createAppContainer(MainNavigator);
