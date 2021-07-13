@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useReducer, useCallback} from 'react';
 import {
     View,
     Text,
@@ -7,14 +7,52 @@ import {
     Button,
     ScrollView,
     KeyboardAvoidingView,
-    TextInput, Keyboard
+    TextInput,
+    Keyboard,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import Colors from '../constants/Colors'
 import Input from "../components/Input";
 import MyButton from "../components/MyButton";
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
+import {useDispatch} from 'react-redux';
+import * as authActions from '../store/actions/authAction';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+/*a reducer which handles any input into any text input,
+so all changes are centralised and managed in this state rather than many different states for validities and values*/
+const formReducer = (state, action) => {
+    if (action.type === FORM_INPUT_UPDATE) {
+        const updatedValues = {
+            ...state.inputValues,
+            [action.input]: action.value
+        };
+        const updatedValidities = {
+            ...state.inputValidities,
+            [action.input]: action.isValid
+        };
+        let updatedFormIsValid = true;
+        for (const key in updatedValidities) {
+            updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+        }
+        return {
+            formIsValid: updatedFormIsValid,
+            inputValidities: updatedValidities,
+            inputValues: updatedValues
+        };
+    }
+    return state;
+};
+
 function LoginScreen(props) {
+
+    const [error, setError] = useState();
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSignedup, setIsSignedup] = useState(false);
+    //Logic to adjust screen if keyboard is present
 
     const [keyBoardIsVisible, setKeyboardIsVisible] = useState(false);
 
@@ -37,6 +75,80 @@ function LoginScreen(props) {
             keyboardDidShowListener.remove();
         };
     }, []);
+
+    //auth
+    const dispatch = useDispatch();
+
+    /*form state will be changed when there is a change in any input and will call the formReducer upon the change*/
+    const [formState, dispatchFormState] = useReducer(formReducer,{
+        /*this object stores the current text in the form corresponding with each field*/
+        inputValues: {
+            email: '',
+            password: ''
+
+        },
+        /*this object simply stores whether the current text in the form is valid or not corresponding with each field*/
+        inputValidities: {
+            email: false,
+            password: false
+        },
+        formIsValid: false
+    });
+
+    useEffect(() => {
+        if(error) {
+            Alert.alert("An Error occurred!", error,[{text: 'Okay'}]);
+        }
+    }, [error]);
+
+    const authHandler = async () => {
+        let action;
+        if (isSignedup) {
+            action =
+                authActions.signup(
+                    formState.inputValues.email,
+                    formState.inputValues.password
+                );
+        } else {
+            action =
+                authActions.login(
+                    formState.inputValues.email,
+                    formState.inputValues.password
+                );
+        }
+        setError(null);
+        setIsLoading(true);
+        try {
+            //adding user to authenticated users
+            await dispatch(action);
+            //Adding user to real time database
+            // if (isSignedup) {
+            //     await dispatch(
+            //         authActions.addUserToDatabase(
+            //             formState.inputValues.email,
+            //             formState.inputValues.password
+            //         )
+            //     )
+            // }
+            props.navigation.navigate('App')
+        } catch(err) {
+            setError(err.message);
+            setIsLoading(false);
+        }
+    };
+
+    //this function is called upon each change in form inputs and saves the current contents of the form to formState
+    const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
+        dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            value: inputValue,
+            isValid: inputValidity,
+            input: inputIdentifier
+        });
+    },
+        [dispatchFormState]
+    );
+
 
 
     return (
@@ -67,8 +179,8 @@ function LoginScreen(props) {
                                    required
                                    email
                                    autoCapitalize="none"
-                                   error="Please enter a valid email address."
-                                   onInputChange={() => {}}
+                                   errorText="Please enter a valid email address."
+                                   onInputChange={inputChangeHandler}
                                    initialValue=""
                         />
                         <Input id="password"
@@ -76,14 +188,27 @@ function LoginScreen(props) {
                                    keyboardType="default"
                                    secureTextEntry
                                    required
-                                   minLength={5}
+                                   minLength={6}
                                    autoCapitalize="none"
-                                   error="Please enter a valid password."
-                                   onInputChange={() => {}}
+                                   errorText="Please enter a valid password."
+                                   onInputChange={inputChangeHandler}
                                    initialValue=""
                         />
-                        <MyButton title="Login" color={Colors.primaryColor}/>
-                        <MyButton title="Don't have an account? Sign Up." color={Colors.primaryColor}/>
+                        {isLoading ? (
+                            <ActivityIndicator size='large' color={Colors.primaryColor}/>
+                        ): (
+                        <View>
+                            <MyButton
+                                title={isSignedup ? "Sign up." : "Login"}
+                                color={Colors.primaryColor}
+                                onPress={authHandler}/>
+                            <MyButton
+                                title={isSignedup ? "Already have an account? Switch to Login." : "Don't have an account? Sign Up."}
+                                color={Colors.primaryColor}
+                                onPress={() => setIsSignedup(prevState => !prevState)}
+                            />
+                        </View>
+                        )}
                     </ScrollView>
                 </View>
             </KeyboardAvoidingView>

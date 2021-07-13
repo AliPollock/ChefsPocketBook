@@ -2,9 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
 
 function HomeScreen(props) {
-    function goHome() {
-        console.log("Go Home")
-    }
+
     return (
         <View>
             <Text>Welcome to the Home Screen</Text>
@@ -26,6 +24,13 @@ function HomeScreen(props) {
                 console.log(props.navigation);
                 props.navigation.navigate({
                     routeName: 'Recipe'
+                });
+            }}
+            />
+            <Button title={"EditRecipe"} onPress={() => {
+                console.log(props.navigation);
+                props.navigation.navigate({
+                    routeName: 'EditRecipe'
                 });
             }}
             />

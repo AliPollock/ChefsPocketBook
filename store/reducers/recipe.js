@@ -1,29 +1,39 @@
-import { CREATE_RECIPE, DELETE_RECIPE, ADD_RECIPE_TO_COLLECTION,REMOVE_RECIPE_FROM_COLLECTION } from "../actions/recipeAction";
+import { CREATE_RECIPE, DELETE_RECIPE, ADD_RECIPE_TO_COLLECTION,REMOVE_RECIPE_FROM_COLLECTION, SET_USER_RECIPES } from "../actions/recipeAction";
+import React, {useState, useEffect, useCallback, useReducer} from 'react';
+import Recipe from "../../models/Recipe";
 
-const DUMMY_RECIPES_PLACEHOLDER = null;
+
 
 const initialState = {
-    recipes: DUMMY_RECIPES_PLACEHOLDER
+    recipeList: [new Recipe('firstId','dummy-recipe', 'dummy-recipe', 'dummy-recipe')],
+    userRecipes: []
 }
 
-function recipeReducers(state = initialState, action) {
+export default (state = initialState, action) => {
     switch (action.type) {
         case CREATE_RECIPE:
-            console.log("create code yet to be implemented");
-            return state;
+            const newRecipe = new Recipe(
+                action.recipeData.id,
+                action.recipeData.title,
+                action.recipeData.description,
+                action.recipeData.imageUrl
+            );
+            // console.log("in the recipe reducer create-recipe");
+            return {...state, recipes: state.recipeList.concat(newRecipe)};
         case DELETE_RECIPE:
             console.log("delete code yet to be implemented");
             return state;
         case ADD_RECIPE_TO_COLLECTION:
-            console.log("add recipe code yet to be implemented");
+            //no change in state
             return state;
         case REMOVE_RECIPE_FROM_COLLECTION:
             console.log("remove recipe code yet to be implemented");
             return state;
+        case SET_USER_RECIPES:
+            // console.log("in the set_user_recipes reducer")
+            return {...state, userRecipes: action.recipes};
         default:
             return state;
     }
 
-}
-
-export default recipeReducers
+};

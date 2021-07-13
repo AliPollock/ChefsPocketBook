@@ -15,7 +15,7 @@ import ExploreByCategoryScreen from '../screens/ExploreByCategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import RecipeScreen from '../screens/RecipeScreen';
+import UserRecipeScreen from '../screens/UserRecipeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LandingScreen from '../screens/LandingScreen';
@@ -51,11 +51,15 @@ const RecipeNavigator = createStackNavigator({
         navigationOptions: {}
     },
     Recipe: {
-        screen: RecipeScreen,
+        screen: UserRecipeScreen,
         navigationOptions: {}
     },
     Search: {
         screen: SearchScreen,
+        navigationOptions: {}
+    },
+    EditRecipe: {
+        screen: EditRecipeScreen,
         navigationOptions: {}
     }
 }, {
