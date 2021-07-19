@@ -6,8 +6,9 @@ import React from 'react';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import { createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
-import {createDrawerNavigator} from 'react-navigation-drawer';
+import {createDrawerNavigator, DrawerNavigatorItems} from 'react-navigation-drawer';
 import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom-tabs';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 
 //Screen imports
 import EditRecipeScreen from '../screens/EditRecipeScreen';
@@ -15,15 +16,19 @@ import ExploreByCategoryScreen from '../screens/ExploreByCategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import UserRecipeScreen from '../screens/UserRecipeScreen';
-import SearchScreen from '../screens/SearchScreen';
-import SignUpScreen from '../screens/SignUpScreen';
+import UserRecipesScreen from '../screens/UserRecipesScreen';
+import AllRecipesScreen from '../screens/AllRecipesScreen';
 import LandingScreen from '../screens/LandingScreen';
 
 //Other imports
-import {Platform} from 'react-native';
+import {Platform, SafeAreaView, Button, View} from 'react-native';
 import Colors from '../constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
+import {useDispatch} from 'react-redux';
+import * as authActions from '../store/actions/authAction';
+import RecipeScreen from "../screens/RecipeScreen";
+import {HeaderButtons, Item} from "react-navigation-header-buttons";
+import HeaderButtonLarge from "../components/HeaderButtonLarge";
 
 //default options
 const defaultStackNavOptions = {
@@ -40,54 +45,116 @@ const defaultStackNavOptions = {
     backgroundColor: Colors.accentColor
 };
 
+const SearchNavigator = createMaterialTopTabNavigator({
+        MyRecipes: {
+            screen: UserRecipesScreen,
+            navigationOptions: {}
+        },
+        AllRecipes: {
+            screen: AllRecipesScreen,
+            navigationOptions: {}
+        }
+    }, {
+        initialRouteName: 'MyRecipes',
+        defaultNavigationOptions:defaultStackNavOptions,
+        tabBarOptions: {
+            style: {
+                backgroundColor: Colors.accentColor
+            },
+            indicatorStyle: {
+                backgroundColor: Colors.primaryColor
+            },
+            activeTintColor:Colors.primaryColor,
+            inactiveTineColor: Colors.accentColor
+        }
+    }
+);
+
 //main stack for navigation through the app
 const RecipeNavigator = createStackNavigator({
     Home: {
         screen: HomeScreen,
         navigationOptions: {}
     },
-    Profile: {
-        screen: ProfileScreen,
-        navigationOptions: {}
-    },
-    Recipe: {
-        screen: UserRecipeScreen,
-        navigationOptions: {}
-    },
     Search: {
-        screen: SearchScreen,
-        navigationOptions: {}
+        screen: SearchNavigator,
+        navigationOptions: (navData) => ({
+            title: 'Recipes',
+            headerLeft: () => (
+                <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
+                    <Item
+                        title="Logout"
+                        iconName='ios-menu'
+                        onPress={() => {
+                            navData.navigation.toggleDrawer();
+                        }}/>
+                </HeaderButtons>
+            )
+        })
+
     },
     EditRecipe: {
         screen: EditRecipeScreen,
+        navigationOptions: {}
+    },
+    Recipe: {
+        screen: RecipeScreen,
         navigationOptions: {}
     }
 }, {
     defaultNavigationOptions:defaultStackNavOptions
 })
 
+const ProfileNavigator = createStackNavigator({
+    Profile: {
+        screen: ProfileScreen,
+        navigationOptions: {}
+    }
+}, {defaultNavigationOptions:defaultStackNavOptions})
+
 const AuthNavigator = createStackNavigator({
     Login: {
         screen: LoginScreen,
         navigationOptions: {}
-    },
-    SignUp: {
-        screen: SignUpScreen,
-        navigationOptions: {}
-    },
+    }
 },{
         defaultNavigationOptions:defaultStackNavOptions
 })
 
 
-const MainNavigator = createSwitchNavigator(
-    {
-        // AuthLoading: LandingScreen,
-        Auth: AuthNavigator,
-        App: RecipeNavigator
+
+//side drawer navigator
+const DrawerNavigator = createDrawerNavigator({
+        Profile: ProfileNavigator,
+        Recipe: RecipeNavigator
     },
     {
-        initialRouteName: 'Auth',
+        initialRouteName: 'Recipe',
+        defaultNavigationOptions:defaultStackNavOptions,
+        contentComponent: props => {
+            const dispatch = useDispatch();
+            return (
+                <View style={{flex: 1, paddingTop: 20}}>
+                <SafeAreaView forceInset={{top: 'always', horizontal: 'never'}}>
+                    <DrawerNavigatorItems {...props}/>
+                    <Button title="Logout" color={Colors.primaryColor} onPress={() => {
+                        dispatch(authActions.logout());
+                        props.navigation.navigate('Auth');
+                    }}/>
+                </SafeAreaView>
+            </View>
+            )
+        }
+    }
+)
+const MainNavigator = createSwitchNavigator(
+    {
+        Startup: LandingScreen,
+        Auth: AuthNavigator,
+        App: DrawerNavigator
+    },
+    {
+        initialRouteName: 'Startup'
     }
 );
 

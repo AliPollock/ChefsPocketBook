@@ -13,8 +13,8 @@ import {
     Alert
 } from 'react-native';
 import Colors from '../constants/Colors'
-import Input from "../components/Input";
-import MyButton from "../components/MyButton";
+import Input from "../components/UIComponents/Input";
+import MyButton from "../components/UIComponents/MyButton";
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import {useDispatch} from 'react-redux';
@@ -174,25 +174,26 @@ function LoginScreen(props) {
                         <Input
                             style={styles.input}
                             id="email"
-                                   label="E-Mail"
-                                   keyboardType="email-address"
-                                   required
-                                   email
-                                   autoCapitalize="none"
-                                   errorText="Please enter a valid email address."
-                                   onInputChange={inputChangeHandler}
-                                   initialValue=""
+                            label="E-Mail"
+                            keyboardType="email-address"
+                            required
+                            email
+                            autoCapitalize="none"
+                            errorText="Please enter a valid email address."
+                            onInputChange={inputChangeHandler}
+                            initialValue=""
                         />
-                        <Input id="password"
-                                   label="Password"
-                                   keyboardType="default"
-                                   secureTextEntry
-                                   required
-                                   minLength={6}
-                                   autoCapitalize="none"
-                                   errorText="Please enter a valid password."
-                                   onInputChange={inputChangeHandler}
-                                   initialValue=""
+                        <Input
+                            id="password"
+                            label="Password"
+                            keyboardType="default"
+                            secureTextEntry
+                            required
+                            minLength={6}
+                            autoCapitalize="none"
+                            errorText="Please enter a valid password."
+                            onInputChange={inputChangeHandler}
+                            initialValue=""
                         />
                         {isLoading ? (
                             <ActivityIndicator size='large' color={Colors.primaryColor}/>

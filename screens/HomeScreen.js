@@ -1,45 +1,67 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Button, ScrollView} from 'react-native';
+import {HeaderButtons, Item} from "react-navigation-header-buttons";
+import Colors from "../constants/Colors";
+import FooterButton from "../components/FooterButton";
+import HeaderButtonLarge from "../components/HeaderButtonLarge";
 
 function HomeScreen(props) {
 
     return (
-        <View>
-            <Text>Welcome to the Home Screen</Text>
-            <Button title={"Search"} onPress={() => {
-                console.log(props.navigation);
-                props.navigation.navigate({
-                    routeName: 'Search'
-                });
-            }}
-            />
-            <Button title={"Profile"} onPress={() => {
-                console.log(props.navigation);
-                props.navigation.navigate({
-                    routeName: 'Profile'
-                });
-            }}
-            />
-            <Button title={"Recipe"} onPress={() => {
-                console.log(props.navigation);
-                props.navigation.navigate({
-                    routeName: 'Recipe'
-                });
-            }}
-            />
-            <Button title={"EditRecipe"} onPress={() => {
-                console.log(props.navigation);
-                props.navigation.navigate({
-                    routeName: 'EditRecipe'
-                });
-            }}
+        <View style={styles.screen}>
+            <ScrollView>
+                <Text>Welcome to the Home Screen</Text>
+                <Button title={"Search"} onPress={() => {
+                    // console.log(props.navigation);
+                    props.navigation.navigate({
+                        routeName: 'Search'
+                    });
+                }}
+                />
+
+            </ScrollView>
+            <FooterButton
+                iconName={'plus'}
+                size={40}
+                onSelect={() =>{
+                    props.navigation.navigate({
+                        routeName: 'EditRecipe'
+                    });
+                }}
             />
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+HomeScreen.navigationOptions = navData => {
+    return {
+        headerTitle: 'Home',
+        headerLeft: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
+                <Item
+                    title="Logout"
+                    iconName='ios-menu'
+                    onPress={() => {
+                        navData.navigation.toggleDrawer();
+                    }}/>
+            </HeaderButtons>
+        )
+    };
+};
 
+const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        backgroundColor: Colors.accentColor,
+        justifyContent: 'space-between'
+    },
+    footer: {
+        backgroundColor: Colors.accentColor
+    },
+    addRecipeContainer: {
+        alignItems: 'flex-end',
+        padding:20
+    }
 });
 
 export default HomeScreen;

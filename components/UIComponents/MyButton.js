@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Button, StyleSheet} from 'react-native';
-import Colors from "../constants/Colors";
+import Colors from "../../constants/Colors";
 import Input from "./Input";
 
 function MyButton(props) {
