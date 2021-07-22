@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
 import {store} from "../App";
 import * as recipeActions from "../store/actions/recipeAction";
@@ -8,15 +8,37 @@ import Colors from "../constants/Colors";
 import FooterButton from "../components/FooterButton";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import SearchInput from "../components/UIComponents/SearchInput";
+import {alignItems} from "styled-system";
+import searchReducer from "../store/reducers/searchReducer";
 
 function UserRecipesScreen(props) {
 
 
     const dispatch = useDispatch();
-    dispatch(recipeActions.getUserRecipes())
-    const userRecipes = useSelector(state => state.recipes.userRecipes);
+    const [searchState, setSearchState] = useState("");
 
-    // console.log(JSON.stringify(userRecipes) + ": user recipes \n \n")
+
+
+    console.log("UserRecipes=" + userRecipes);
+
+    useLayoutEffect(() => {
+        dispatch(recipeActions.getUserRecipes());
+        dispatch(recipeActions.setCurrentRecipes(""));
+        console.log("running initialisation dispatches");
+    }, []);
+
+    const userRecipes = useSelector(state => state.recipes.currentUserRecipes);
+
+    const searchChangeHandler = (text) => {
+        setSearchState(text);
+        console.log("Text: " + text);
+        // dispatch(recipeActions.setCurrentRecipes(text), [setSearchState]);
+
+        dispatch(recipeActions.setCurrentRecipes(text));
+        console.log("searchState in handler:" + searchState)
+    }
+
 
     //factor this function out into its own file
     function renderRecipeItem(itemData) {
@@ -67,6 +89,10 @@ function UserRecipesScreen(props) {
     return (
 
         <View style={styles.screen}>
+            <SearchInput
+                searchValue={searchState}
+                onChange={text => searchChangeHandler(text)}
+            />
             <FlatList
                 data={userRecipes}
                 keyExtractor={item => item.id}
@@ -104,7 +130,8 @@ UserRecipesScreen.navigationOptions = navData => {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: Colors.accentColor
+        backgroundColor: Colors.accentColor,
+        alignItems: 'center'
     },
 });
 

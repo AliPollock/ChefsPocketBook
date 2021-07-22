@@ -11,6 +11,7 @@ export const SET_USER_RECIPES = 'SET_USER_RECIPES';
 export const SET_RECIPE_LIST = 'SET_RECIPE_LIST';
 export const UPDATE_RECIPE = "UPDATE_RECIPE";
 export const DO_NOTHING = "DO_NOTHING";
+export const SET_CURRENT_RECIPES = "SET_CURRENT_RECIPES";
 //action creator functions
 
 
@@ -152,6 +153,7 @@ export const createRecipe = (
 
 //action which retrieves all recipes associated with the user
 export const getUserRecipes = () => {
+    console.log("running getUserRecipes action");
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
@@ -356,3 +358,7 @@ export const addRecipeToCollection = (
 export const removeRecipeFromCollection = id => {
     return {type: REMOVE_RECIPE_FROM_COLLECTION, recipeId: id };
 }
+
+export const setCurrentRecipes = (searchTerm) => {
+    return {type: SET_CURRENT_RECIPES, searchTerm: searchTerm}
+};

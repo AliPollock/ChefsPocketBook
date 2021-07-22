@@ -1,17 +1,23 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import {useDispatch} from "react-redux";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import {size} from "styled-system";
+import {fontSize, size} from "styled-system";
 import HeaderButtonSmall from "../components/HeaderButtonSmall";
 import {addRecipeToCollection, doNothing} from "../store/actions/recipeAction";
+import Colors from "../constants/Colors";
+import {Rating} from "react-native-ratings";
+import MyButton from "../components/UIComponents/MyButton";
+import MyTabButton from "../components/UIComponents/MyTabButton";
 
 function RecipeScreen(props) {
 
     //const that keeps charge of if the recipe is a user recipe
     const [isUserRecipe, setIsUserRecipe] = useState(props.navigation.getParam('isUserRecipe'))
     const dispatch = useDispatch();
+
+    const[currentViewTab, setCurrentViewTab] = useState("ingredients");
 
     // function which handles a change in the toggleIsUser button
     const toggleIsUserRecipe = useCallback(() => {
@@ -45,34 +51,119 @@ function RecipeScreen(props) {
             ));
             console.log(props.navigation.getParam('mainCollectionId'))
             //need to reset isuserrecipe param to be true here
-            // props.navigation.setParams('isUserRecipe': true);
+            setIsUserRecipe(true);
+            props.navigation.setParams({isUserRecipe: true})
         }
 
     }, [dispatch, isUserRecipe]);
+
+
+    const toggleCurrentViewTab = (buttonClicked) => {
+        if(currentViewTab === "directions" && buttonClicked === "directions") {
+            // console.log("Scenario 1")
+            return;
+        } else if (currentViewTab === "ingredients" && buttonClicked === "ingredients") {
+            // console.log("Scenario 2")
+            return;
+        } else if(currentViewTab === "directions" && buttonClicked === "ingredients") {
+            // console.log("Scenario 3");
+            setCurrentViewTab("ingredients")
+        } else if(currentViewTab === "ingredients" && buttonClicked === "directions") {
+            // console.log("Scenario 4");
+            setCurrentViewTab("directions");
+        } else {
+            console.log("a tab error has occurred");
+            return;
+        }
+    }
 
     //whenever there is a change in the isUserRecipe param, this effect is triggered
     useEffect(() => {
         props.navigation.setParams({toggleIsUserRecipe: toggleIsUserRecipe});
     }, [toggleIsUserRecipe]);
 
-    // //second arguments are the dependencies, if they change, useEffect will run
-    // ionicons
-    // //passing whether the meal is currently a favourite to the header
-    // useEffect(() => {
-    //     props.navigation.setParams({isFav: currentMealIsFavourite});
-    // }, [currentMealIsFavourite]);
 
     const recipeTitle = props.navigation.getParam('title')
 
     return (
-        <View>
-            <Text>{recipeTitle}</Text>
+        <View style={styles.screen}>
+            <Text style={styles.title}>{recipeTitle}</Text>
+            <Rating
+                style={styles.rating}
+                imageSize={30}
+                readonly
+                startingValue={props.navigation.getParam('rating')}
+                tintColor={Colors.accentColor}
+            />
+            <Text style={styles.recipeText}>{props.navigation.getParam('categories')}</Text>
+            <View style={styles.tabContainer}>
+                <MyTabButton
+                    style={{flex: 1, borderColor: currentViewTab === "ingredients" ? 'white' :'black'}}
+                    title="ingredients"
+                    onPress={() => {
+                        toggleCurrentViewTab("ingredients")
+                    }}
+                />
+                <MyTabButton
+                    style={{flex: 1, borderColor: currentViewTab === "directions" ? 'white' :'black'}}
+                    title="directions"
+                    onPress={() => {
+                        toggleCurrentViewTab("directions")
+                    }}
+                />
+            </View>
+            <View style={styles.recipeBox}>
+                <Text style={styles.recipeText}>
+                    {currentViewTab === "ingredients" ? props.navigation.getParam('ingredients')
+                    : props.navigation.getParam('directions')
+                    }
+                </Text>
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-
+    screen: {
+        backgroundColor: Colors.accentColor,
+        flex: 1
+    },
+    title: {
+        fontSize: 20,
+        margin: 5,
+        color: 'white',
+        fontFamily: 'open-sans-bold'
+    },
+    rating: {
+        margin: 5
+    },
+    recipeText: {
+        fontSize: 15,
+        fontFamily: 'open-sans-bold',
+        color: 'white'
+    },
+    tabContainer: {
+        width: Dimensions.get('window').width,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        margin: 0,
+        padding: 0
+    },
+    recipeBox: {
+        margin: 0,
+        padding: 0,
+        borderColor: 'white',
+        borderWidth: 1,
+        width: Dimensions.get('window').width,
+        height : Dimensions.get('window').height/2,
+        borderRadius: 5,
+        overflow: 'hidden',
+        marginVertical:10,
+        shadowColor: 'black',
+        shadowOpacity: 0.26,
+        shadowOffset: {width:0, height: 2},
+        shadowRadius: 10,
+    }
 });
 
 RecipeScreen.navigationOptions = (navigationData) => {

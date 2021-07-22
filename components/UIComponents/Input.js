@@ -4,6 +4,7 @@ import Colors from '../../constants/Colors';
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
+const INPUT_FOCUSED = 'INPUT_FOCUSED';
 
 const inputReducer = (state, action) => {
     switch (action.type) {
@@ -16,7 +17,13 @@ const inputReducer = (state, action) => {
         case INPUT_BLUR:
             return {
                 ...state,
-                touched: true
+                touched: true,
+                focused: false
+            };
+        case INPUT_FOCUSED:
+            return {
+                ...state,
+                focused: true
             };
         default:
             return state;
@@ -28,7 +35,8 @@ function Input(props) {
     const [inputState, dispatch] = useReducer(inputReducer, {
         value: props.initialValue ? props.initialValue : '',
         isValid: true,
-        touched: false
+        touched: false,
+        focused: false
     });
 
     const { onInputChange, id } = props;
@@ -64,6 +72,10 @@ function Input(props) {
         dispatch({ type: INPUT_BLUR });
     };
 
+    const gainedFocusHandler = () => {
+        dispatch({type: INPUT_FOCUSED});
+    }
+
     return (
         <View style={styles.input}>
             <Text style={styles.label}>{props.label}</Text>
@@ -72,8 +84,9 @@ function Input(props) {
                 style={styles.textInput}
                 value={inputState.value}
                 onChangeText={textChangeHandler}
-                onBlur={lostFocusHandler}/>
-            {!inputState.isValid && <Text>{props.errorText}</Text>}
+                onBlur={lostFocusHandler}
+                onFocus={gainedFocusHandler}/>
+            {!inputState.isValid && !inputState.focused && <Text style={styles.errorText}>{props.errorText}</Text>}
         </View>
     );
 }
@@ -93,6 +106,9 @@ const styles = StyleSheet.create({
         color: "white"
     },
     textInput: {
+        color: "white"
+    },
+    errorText: {
         color: "white"
     }
 });

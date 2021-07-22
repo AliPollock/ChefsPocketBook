@@ -4,8 +4,11 @@ import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import Colors from "../constants/Colors";
 import FooterButton from "../components/FooterButton";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import * as recipeActions from "../store/actions/recipeAction";
+import {useDispatch} from "react-redux";
 
 function HomeScreen(props) {
+    const dispatch = useDispatch();
 
     return (
         <View style={styles.screen}>

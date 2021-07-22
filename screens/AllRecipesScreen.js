@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Colors from "../constants/Colors";
 import * as recipeActions from "../store/actions/recipeAction";
 import FooterButton from "../components/FooterButton";
+import SearchInput from "../components/UIComponents/SearchInput";
 
 function AllRecipesScreen(props) {
 
@@ -65,6 +66,7 @@ function AllRecipesScreen(props) {
     return (
 
         <View style={styles.screen}>
+            <SearchInput/>
             <FlatList
                 data={allRecipes}
                 keyExtractor={item => item.id}
@@ -86,7 +88,8 @@ function AllRecipesScreen(props) {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: Colors.accentColor
+        backgroundColor: Colors.accentColor,
+        alignItems: 'center'
     },
 });
 
