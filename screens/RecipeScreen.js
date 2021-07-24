@@ -178,7 +178,7 @@ RecipeScreen.navigationOptions = (navigationData) => {
                     HeaderButtonComponent={isUserRecipe? HeaderButtonSmall: HeaderButtonLarge}>
 
                     <Item
-                        title='Favourite'
+                        title='userRecipe'
                         iconName={isUserRecipe ? 'pencil-sharp' : 'md-add-circle-outline'}
                         onPress={toggleIsUserRecipe}
                     />

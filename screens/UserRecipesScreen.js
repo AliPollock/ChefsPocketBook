@@ -12,31 +12,29 @@ import SearchInput from "../components/UIComponents/SearchInput";
 import {alignItems} from "styled-system";
 import searchReducer from "../store/reducers/searchReducer";
 
+
+
 function UserRecipesScreen(props) {
 
 
     const dispatch = useDispatch();
+    dispatch(recipeActions.getUserRecipes())
+
     const [searchState, setSearchState] = useState("");
 
-
-
-    console.log("UserRecipes=" + userRecipes);
-
-    useLayoutEffect(() => {
-        dispatch(recipeActions.getUserRecipes());
+    useEffect(() => {
         dispatch(recipeActions.setCurrentRecipes(""));
-        console.log("running initialisation dispatches");
-    }, []);
+    }, [])
+
 
     const userRecipes = useSelector(state => state.recipes.currentUserRecipes);
+    console.log("currentUserRecipes: " + userRecipes);
 
     const searchChangeHandler = (text) => {
         setSearchState(text);
-        console.log("Text: " + text);
-        // dispatch(recipeActions.setCurrentRecipes(text), [setSearchState]);
 
         dispatch(recipeActions.setCurrentRecipes(text));
-        console.log("searchState in handler:" + searchState)
+        // console.log("searchState in handler:" + searchState)
     }
 
 
@@ -136,3 +134,4 @@ const styles = StyleSheet.create({
 });
 
 export default UserRecipesScreen;
+

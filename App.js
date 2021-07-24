@@ -26,6 +26,7 @@ import 'firebase/firestore';
 import NavigationContainer from './navigation/NavigationContainer';
 import authReducer from './store/reducers/auth';
 import recipeReducer from './store/reducers/recipe';
+import groupReducer from './store/reducers/group'
 
 /*statement which has to be made in the app.js file in order to use react-native-screens*/
 enableScreens();
@@ -45,7 +46,8 @@ const fetchFonts = () => {
 //reducer which will hold the state of the app
 const rootReducer = combineReducers({
   recipes: recipeReducer,
-  authenticate: authReducer
+  authenticate: authReducer,
+  groups: groupReducer
 });
 
 //redux store initialisation

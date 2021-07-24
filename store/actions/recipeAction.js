@@ -153,10 +153,11 @@ export const createRecipe = (
 
 //action which retrieves all recipes associated with the user
 export const getUserRecipes = () => {
-    console.log("running getUserRecipes action");
+    // console.log("running getUserRecipes action");
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
+        console.log(JSON.stringify(getState().authenticate));
 
         try {
             const response = await fetch(
@@ -360,5 +361,6 @@ export const removeRecipeFromCollection = id => {
 }
 
 export const setCurrentRecipes = (searchTerm) => {
-    return {type: SET_CURRENT_RECIPES, searchTerm: searchTerm}
+    let searchTermLowerCase = searchTerm.toString().toLowerCase();
+    return {type: SET_CURRENT_RECIPES, searchTerm: searchTermLowerCase}
 };

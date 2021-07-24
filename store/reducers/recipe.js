@@ -44,16 +44,7 @@ export default (state = initialState, action) => {
             // console.log("in the recipe reducer create-recipe");
             return {...state, recipes: state.recipeList.concat(newRecipe)};
         case DELETE_RECIPE:
-            /*
-            //code which will be used when delete is implemented
-            console.log("in delete reducer code");
-            return {
-                ...state,
-                userRecipes: state.userRecipes.filter(
-                    recipe => recipe !== action.recipeId
-                )
-            };*/
-            console.log("delete code yet to be implemented");
+            console.log("/delete code not implemented, should not be possible for a user to remove a recipe from the main collection.");
             return state;
         case ADD_RECIPE_TO_COLLECTION:
             const newUserRecipe = new Recipe(
@@ -81,7 +72,6 @@ export default (state = initialState, action) => {
             console.log("remove recipe code yet to be implemented");
             return state;
         case SET_USER_RECIPES:
-            // console.log("in the set_user_recipes reducer")
             return {...state, userRecipes: action.recipes};
         case SET_RECIPE_LIST:
             return {...state, recipeList: action.recipes};
@@ -92,21 +82,22 @@ export default (state = initialState, action) => {
 
             //checking if the search is empty, in which case I want to display all recipes
             if (action.searchTerm === "") {
-                console.log("returning full list state")
+                console.log("returning full list state, userRecipes: " + state.userRecipes);
                 return {...state, currentUserRecipes: state.userRecipes, currentAllRecipes: state.recipeList};
             }
 
+            //iterate across userRecipes to get each individual recipe separately
             for (let index = 0; index < state.userRecipes.length; index++) {
                 let item = state.userRecipes[index];
                 let match = false;
 
-                // console.log("Key: " + item.key + ", value: " + item.key + ", and value: " + key)
+                //iterate across each item in the recipe
                 for (let index = 0; index < Object.values(item).length; index++) {
 
-
+                    //filter for only string types
                     if (typeof(Object.values(item)[index]) == "string") {
-                        // console.log("type: " + typeof(Object.values(item)[index]) + ", value: " + Object.values(item)[index]);
-                        if (Object.values(item)[index].match(action.searchTerm)) {
+
+                        if (Object.values(item)[index].toLowerCase().match(action.searchTerm)) {
                             match = true;
                         }
                     }
@@ -114,6 +105,28 @@ export default (state = initialState, action) => {
 
                 if (match === true) {
                     updatedCurrentUserRecipes.push(item);
+                }
+            };
+
+            //iterate across recipeList to get each individual recipe separately
+            for (let index = 0; index < state.recipeList.length; index++) {
+                let item = state.recipeList[index];
+                let match = false;
+
+                //iterate across each item in the recipe
+                for (let index = 0; index < Object.values(item).length; index++) {
+
+                    //filter for only string types
+                    if (typeof(Object.values(item)[index]) == "string") {
+
+                        if (Object.values(item)[index].toLowerCase().match(action.searchTerm)) {
+                            match = true;
+                        }
+                    }
+                }
+
+                if (match === true) {
+                    updatedCurrentAllRecipes.push(item);
                 }
             };
 

@@ -76,7 +76,7 @@ export const login = (email, password) => {
         );
 
         const resData = await response.json();
-        console.log(resData);
+        // console.log(resData);
 
         if(!response.ok) {
             const errorId = resData.error.message;
@@ -120,12 +120,12 @@ const setLogoutTimer = expirationTime => {
 
 //function to save data to device memory so that token persists between sessions and can be ultimately be called on by redux at the start of each new session
 const saveDataToStorage = (token, userId, expirationDate) => {
-    console.log('data being saved: ' +  JSON.stringify({
-        token: token,
-        userId: userId,
-        expirationDate: expirationDate.toISOString()
-    })
-    );
+    // console.log('data being saved: ' +  JSON.stringify({
+    //     token: token,
+    //     userId: userId,
+    //     expirationDate: expirationDate.toISOString()
+    // })
+    // );
     AsyncStorage.setItem('userData', JSON.stringify({
         token: token,
         userId: userId,

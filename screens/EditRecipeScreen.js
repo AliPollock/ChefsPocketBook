@@ -79,24 +79,6 @@ const formReducer = (state, action) => {
             inputTouched: state.inputTouched
         };
     }
-    // else if (action.type === RATING) {
-    //     console.log(action.input);
-    //     console.log(action.value);
-    //     const updatedValues = {
-    //         ...state.inputValues,
-    //         [action.input]: action.value
-    //     }
-    //     console.log(JSON.stringify(updatedValues));
-    //     console.log(JSON.stringify(state.inputValues));
-    //     return {
-    //         formIsValid: state.formIsValid,
-    //         inputValidities: state.inputValidities,
-    //         //for some reason expo crashes when this state gets changed to updatedValues (despite the fact the console.logs show it to be identical
-    //         //it did work for a few minutes and then when I commented out the console.logs it stopped working
-    //         inputValues: state.inputValues,
-    //         inputTouched: state.inputTouched
-    //     };
-    // }
     return state;
 };
 
@@ -108,8 +90,8 @@ function EditRecipeScreen(props) {
     const selectedRecipe = useSelector(
         state => state.recipes.userRecipes.find(recipe => recipe.id === recipeId)
     );
-    // console.log(selectedRecipe.id)
-    // console.log(selectedRecipe.title)
+
+
     //state to keep track of ratings
     const [currentRating, setCurrentRating] = useState(0);
     const [showServingsDropDown, setServingsDropDown] = useState(false);
@@ -153,16 +135,7 @@ function EditRecipeScreen(props) {
     useEffect(() => {
         props.navigation.setParams({ submit: submitHandler });
     }, [submitHandler]);
-
-    //no longer need to call formstate, just directly sending rating state to firebase
-    //function which handles rating changes
-    // useEffect(() => {
-    //     dispatchFormState({
-    //         type: RATING,
-    //         value: currentRating,
-    //         input: 'rating'
-    //     })
-    // },[currentRating]);
+    
 
     /*form state will change with any change in any input and will call the formReducer upon the change*/
     /*using array destructuring here to save the below into the formState variable and the dispatchFormState is a function which will act upon it*/

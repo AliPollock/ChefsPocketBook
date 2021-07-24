@@ -1,14 +1,21 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, ScrollView} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import Colors from "../constants/Colors";
 import FooterButton from "../components/FooterButton";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
 import * as recipeActions from "../store/actions/recipeAction";
+import * as groupActions from "../store/actions/groupAction";
 import {useDispatch} from "react-redux";
 
 function HomeScreen(props) {
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(recipeActions.getUserRecipes());
+        dispatch(recipeActions.getAllRecipes());
+        dispatch(groupActions.setUserGroups())
+    }, [])
 
     return (
         <View style={styles.screen}>
@@ -17,7 +24,10 @@ function HomeScreen(props) {
                 <Button title={"Search"} onPress={() => {
                     // console.log(props.navigation);
                     props.navigation.navigate({
-                        routeName: 'Search'
+                        routeName: 'Search',
+                        params: {
+                            searchTerm: ""
+                        }
                     });
                 }}
                 />

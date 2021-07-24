@@ -29,6 +29,9 @@ import * as authActions from '../store/actions/authAction';
 import RecipeScreen from "../screens/RecipeScreen";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import AllGroupsScreen from "../screens/AllGroupsScreen";
+import GroupScreen from "../screens/GroupScreen";
+import CreateGroupScreen from "../screens/CreateGroupScreen";
 
 //default options
 const defaultStackNavOptions = {
@@ -121,15 +124,35 @@ const AuthNavigator = createStackNavigator({
         defaultNavigationOptions:defaultStackNavOptions
 })
 
+const GroupNavigator = createStackNavigator({
+    AllGroups: {
+        screen: AllGroupsScreen,
+        navigationOptions: {}
+    },
+    Group: {
+        screen: GroupScreen,
+        navigationOptions: {}
+    },
+    CreateGroup: {
+        screen: CreateGroupScreen,
+        navigationOptions: {}
+    }
+
+},{
+    initialRouteName: 'AllGroups',
+    defaultNavigationOptions:defaultStackNavOptions}
+)
+
 
 
 //side drawer navigator
 const DrawerNavigator = createDrawerNavigator({
         Profile: ProfileNavigator,
-        Recipe: RecipeNavigator
+        Recipes: RecipeNavigator,
+        Groups: GroupNavigator
     },
     {
-        initialRouteName: 'Recipe',
+        initialRouteName: 'Recipes',
         defaultNavigationOptions:defaultStackNavOptions,
         contentComponent: props => {
             const dispatch = useDispatch();

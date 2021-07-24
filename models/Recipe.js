@@ -19,7 +19,7 @@ class Recipe {
         photos,
         groupName
         ) {
-        this.id = id,
+        this.id = id;
         this.mainCollectionId = mainCollectionId;
         this.title = title;
         this.description = description;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
 import RecipeCard from "../components/RecipeCard";
 import {useDispatch, useSelector} from "react-redux";
@@ -11,11 +11,21 @@ function AllRecipesScreen(props) {
 
     const dispatch = useDispatch();
     dispatch(recipeActions.getAllRecipes())
-    const userRecipes = useSelector(state => state.recipes.userRecipes);
-    const allRecipes = useSelector(state => state.recipes.recipeList)
 
-    // console.log(JSON.stringify(userRecipes) + ": user recipes \n \n")
-    // console.log(JSON.stringify(allRecipes) + ": all recipes\n")
+    const [searchState, setSearchState] = useState("");
+
+    useEffect(() =>{
+        dispatch(recipeActions.setCurrentRecipes(""));
+    },[])
+
+    const userRecipes = useSelector(state => state.recipes.userRecipes);
+    const allRecipes = useSelector(state => state.recipes.currentAllRecipes)
+
+
+    const searchChangeHandler = (text) => {
+        setSearchState(text);
+        dispatch(recipeActions.setCurrentRecipes(text));
+    }
 
     //factor this function out into its own file
     function renderRecipeItem(itemData) {
@@ -66,7 +76,10 @@ function AllRecipesScreen(props) {
     return (
 
         <View style={styles.screen}>
-            <SearchInput/>
+            <SearchInput
+                searchValue={searchState}
+                onChange={text => searchChangeHandler(text)}
+            />
             <FlatList
                 data={allRecipes}
                 keyExtractor={item => item.id}
