@@ -32,6 +32,9 @@ import HeaderButtonLarge from "../components/HeaderButtonLarge";
 import AllGroupsScreen from "../screens/AllGroupsScreen";
 import GroupScreen from "../screens/GroupScreen";
 import CreateGroupScreen from "../screens/CreateGroupScreen";
+import GroupRecipesScreen from "../screens/GroupRecipes";
+import GroupMembers from "../screens/GroupMembers";
+import GroupMembersScreen from "../screens/GroupMembers";
 
 //default options
 const defaultStackNavOptions = {
@@ -136,7 +139,9 @@ const GroupNavigator = createStackNavigator({
     CreateGroup: {
         screen: CreateGroupScreen,
         navigationOptions: {}
-    }
+    },
+    GroupRecipes: GroupRecipesScreen,
+    GroupMembers: GroupMembersScreen
 
 },{
     initialRouteName: 'AllGroups',
@@ -148,11 +153,11 @@ const GroupNavigator = createStackNavigator({
 //side drawer navigator
 const DrawerNavigator = createDrawerNavigator({
         Profile: ProfileNavigator,
-        Recipes: RecipeNavigator,
+        Home: RecipeNavigator,
         Groups: GroupNavigator
     },
     {
-        initialRouteName: 'Recipes',
+        initialRouteName: 'Home',
         defaultNavigationOptions:defaultStackNavOptions,
         contentComponent: props => {
             const dispatch = useDispatch();

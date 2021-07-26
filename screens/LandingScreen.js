@@ -20,7 +20,7 @@ function LandingScreen(props) {
 
             //user logged in
             const transformedData = JSON.parse(userData);
-            const {token, userId, expirationDate} = transformedData;
+            const {token, userId, userEmail, expirationDate} = transformedData;
             const expiryDate = new Date(expirationDate)
 
             //not valid credentials or login expired
@@ -33,7 +33,7 @@ function LandingScreen(props) {
 
             //Valid credentials
             props.navigation.navigate('App');
-            dispatch(authActions.authenticate(userId, token, expirationTime));
+            dispatch(authActions.authenticate(userId, token, userEmail, expirationTime));
         };
 
         tryLogin();

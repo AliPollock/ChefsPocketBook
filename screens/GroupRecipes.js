@@ -1,41 +1,33 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
-import {store} from "../App";
-import * as recipeActions from "../store/actions/recipeAction";
 import {useDispatch, useSelector} from "react-redux";
+import * as groupActions from "../store/actions/groupAction";
 import RecipeCard from "../components/RecipeCard";
-import Colors from "../constants/Colors";
+import SearchInput from "../components/UIComponents/SearchInput";
 import FooterButton from "../components/FooterButton";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import SearchInput from "../components/UIComponents/SearchInput";
-import {alignItems} from "styled-system";
-import searchReducer from "../store/reducers/searchReducer";
+import Colors from "../constants/Colors";
+import {store} from "../App";
 
-
-
-function UserRecipesScreen(props) {
-
+function GroupRecipesScreen(props) {
     console.log(JSON.stringify(store.getState()));
+
     const dispatch = useDispatch();
-    dispatch(recipeActions.getUserRecipes())
+    dispatch(groupActions.getGroupRecipes(props.navigation.getParam("mainCollectionId")))
 
     const [searchState, setSearchState] = useState("");
 
     useEffect(() => {
-        dispatch(recipeActions.setCurrentRecipes(""));
+        dispatch(groupActions.setCurrentGroupRecipes(""));
     }, [])
 
-
-    // console.log("store (currentUserRecipes): " + JSON.stringify(store.getState().recipes.currentUserRecipes))
-
-    const userRecipes = useSelector(state => state.recipes.currentUserRecipes);
-    // console.log("currentUserRecipes: " + userRecipes);
+    const groupRecipes = useSelector(state => state.groups.currentGroupRecipes);
 
     const searchChangeHandler = (text) => {
         setSearchState(text);
 
-        dispatch(recipeActions.setCurrentRecipes(text));
+        dispatch(groupActions.setCurrentGroupRecipes(text));
         // console.log("searchState in handler:" + searchState)
     }
 
@@ -95,7 +87,7 @@ function UserRecipesScreen(props) {
             />
             <FlatList
                 contentContainerStyle={styles.list}
-                data={userRecipes}
+                data={groupRecipes}
                 keyExtractor={item => item.id}
                 renderItem={renderRecipeItem}
             />
@@ -104,7 +96,7 @@ function UserRecipesScreen(props) {
                 size={40}
                 onSelect={() =>{
                     props.navigation.navigate({
-                    routeName: 'Home'
+                        routeName: 'Home'
                     });
                 }}
             />
@@ -112,7 +104,7 @@ function UserRecipesScreen(props) {
     );
 };
 
-UserRecipesScreen.navigationOptions = navData => {
+GroupRecipesScreen.navigationOptions = navData => {
     return {
         headerTitle: 'Recipes',
         headerLeft: () => (
@@ -141,5 +133,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default UserRecipesScreen;
-
+export default GroupRecipesScreen;

@@ -157,7 +157,7 @@ export const getUserRecipes = () => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
-        console.log(JSON.stringify(getState().authenticate));
+        // console.log(JSON.stringify(getState().authenticate));
 
         try {
             const response = await fetch(

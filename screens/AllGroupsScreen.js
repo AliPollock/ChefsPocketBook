@@ -7,6 +7,7 @@ import RecipeScreen from "./RecipeScreen";
 import {useSelector} from "react-redux";
 import GroupCard from "../components/UIComponents/GroupCard";
 import Colors from "../constants/Colors";
+import GroupRecipesScreen from "./GroupRecipes";
 
 function AllGroupsScreen(props) {
 
@@ -15,8 +16,8 @@ function AllGroupsScreen(props) {
 
     }, [createGroup]);
 
+
     const userGroups = useSelector(state => state.groups.userGroups)
-    console.log("User Groups: " + userGroups)
 
     const createGroup = useCallback(() => {
         props.navigation.navigate({
@@ -36,6 +37,7 @@ function AllGroupsScreen(props) {
                         routeName: 'Group',
                         params: {
                             groupId: itemData.item.id,
+                            groupName: itemData.item.groupName,
                             mainCollectionId: itemData.item.mainCollectionId,
                             member: itemData.item.member,
                             recipes: itemData.item.recipes
@@ -72,6 +74,9 @@ const styles = StyleSheet.create({
 AllGroupsScreen.navigationOptions = navData => {
     const createGroup = navData.navigation.getParam("createGroup");
 
+
+
+
     return{
         headerTitle: "My Groups",
         headerRight: () => (
@@ -86,6 +91,16 @@ AllGroupsScreen.navigationOptions = navData => {
             </HeaderButtons>
 
 
+        ),
+        headerLeft: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
+                <Item
+                    title="Logout"
+                    iconName='ios-menu'
+                    onPress={() => {
+                        navData.navigation.toggleDrawer();
+                    }}/>
+            </HeaderButtons>
         )
     };
 }

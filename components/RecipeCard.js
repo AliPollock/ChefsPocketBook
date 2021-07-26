@@ -6,7 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     TouchableNativeFeedback,
-    Platform
+    Platform, Dimensions
 } from 'react-native';
 import Card from "./UIComponents/Card";
 import {alignItems, flexDirection, fontSize} from "styled-system";
@@ -52,9 +52,10 @@ function RecipeCard(props) {
 
 const styles = StyleSheet.create({
     recipe: {
+        marginTop: 20,
         height: 150,
-        margin: 20,
-        alignItems: 'center'
+        alignItems: 'center',
+        width: Dimensions.get('window').width,
     },
     titleContainer: {
         flexDirection: 'row',

@@ -1,21 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {WEB_API_KEY} from "../../constants/Config";
-import {CREATE_RECIPE} from "./recipeAction";
+import {ADD_RECIPE_TO_COLLECTION, CREATE_RECIPE, SET_USER_RECIPES} from "./recipeAction";
+import Recipe from "../../models/Recipe";
 
 //action identifiers
 export const SIGNUP = 'SIGNUP';
 export const LOGIN = 'LOGIN';
 export const ADD_USER_TO_DATABASE = 'ADD_USER_TO_DATABASE';
 export const AUTHENTICATE = 'AUTHENTICATE';
-export const LOGOUT = 'LOGOUT;'
+export const LOGOUT = 'LOGOUT';
+export const SET_ALL_EMAILS = 'GET_ALL_EMAILS';
+export const ADD_EMAIL_TO_DATABASE = 'ADD_EMAIL_TO_DATABASE';
+export const ADD_EMAIL_TO_MAIN_COLLECTION = 'ADD_EMAIL_TO_MAIN_COLLECTION';
 
 let timer;
 
 //function used to authenticate user login/signup
-export const authenticate = (userId, token, expirationTime) => {
+export const authenticate = (userId, token, email, expirationTime) => {
     return dispatch => {
         dispatch(setLogoutTimer(expirationTime));
-        dispatch({type: AUTHENTICATE, userId: userId, token: token});
+        dispatch({type: AUTHENTICATE, userId: userId, token: token, userEmail: email});
     };
 };
 
@@ -38,22 +42,23 @@ export const signup = (email, password) => {
         );
 
         const resData = await response.json();
-        console.log(resData);
-
-        //error handling for signup form
+        // console.log("resData: " + JSON.stringify(resData));     //error handling for signup form
         if(!response.ok) {
             const errorId = resData.error.message;
-            let message = "Something went wrong with the servers."
+            let message = "Something went wrong with the servers when signingup."
             if(errorId === "EMAIL_EXISTS") {
                 message = 'this account already exists in our database!'
             }
             throw new Error(message);
         }
 
-        dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000));
+
+        dispatch(authenticate(resData.localId, resData.idToken, resData.email,parseInt(resData.expiresIn) * 1000));
+        dispatch(addEmailToDatabase(resData.email));
+        dispatch(addEmailToMainCollection(resData.email));
         // dispatch({type: SIGNUP, token: resData.idToken, userId: resData.localId });
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn)*1000);
-        saveDataToStorage(resData.idToken, resData.localId, expirationDate);
+        saveDataToStorage(resData.idToken, resData.localId, resData.email, expirationDate);
     };
 };
 
@@ -76,7 +81,7 @@ export const login = (email, password) => {
         );
 
         const resData = await response.json();
-        // console.log(resData);
+        // console.log("login resData: " + JSON.stringify(resData));
 
         if(!response.ok) {
             const errorId = resData.error.message;
@@ -88,10 +93,10 @@ export const login = (email, password) => {
             }
             throw new Error(message);
         }
-        dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000));
+        dispatch(authenticate(resData.localId, resData.idToken, resData.email, parseInt(resData.expiresIn) * 1000));
         // dispatch({ type: LOGIN, token: resData.idToken, userId: resData.localId });
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn)*1000);
-        saveDataToStorage(resData.idToken, resData.localId, expirationDate);
+        saveDataToStorage(resData.idToken, resData.localId, resData.email, expirationDate);
     };
 };
 
@@ -119,7 +124,7 @@ const setLogoutTimer = expirationTime => {
 };
 
 //function to save data to device memory so that token persists between sessions and can be ultimately be called on by redux at the start of each new session
-const saveDataToStorage = (token, userId, expirationDate) => {
+const saveDataToStorage = (token, userId, email, expirationDate) => {
     // console.log('data being saved: ' +  JSON.stringify({
     //     token: token,
     //     userId: userId,
@@ -129,7 +134,112 @@ const saveDataToStorage = (token, userId, expirationDate) => {
     AsyncStorage.setItem('userData', JSON.stringify({
         token: token,
         userId: userId,
+        userEmail: email,
         expirationDate: expirationDate.toISOString()
     })
     );
+}
+
+export const getAllEmails = () => {
+
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        const userId = getState().authenticate.userId;
+
+        try {
+            const response = await fetch(
+                `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/email.json?auth=${token}`);
+
+            const resData = await response.json();
+            const loadedEmails = [];
+
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+
+            for (const key in resData) {
+                // console.log(JSON.stringify(resData[key]));
+                loadedEmails.push(resData[key]);
+            }
+
+            // console.log(loadedEmails);
+
+            dispatch({
+                type: SET_ALL_EMAILS, emails: loadedEmails
+            });
+        } catch(err) {
+            throw(err)
+        }
+    };
+}
+
+export const addEmailToDatabase = (email) => {
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        const userId = getState().authenticate.userId;
+        // console.log(JSON.stringify(getState()));
+        //promise will be returned and stored in const response
+        const response = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/${userId}/email.json?auth=${token}` ,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email
+                })
+            });
+
+        const resData= await response.json();
+        // console.log("here is the resData: " + resData);
+
+
+        if (!response.ok) {
+            throw new Error('Something went wrong adding email to database!');
+        }
+
+        //action to change state
+        dispatch({
+            type: ADD_EMAIL_TO_DATABASE,
+            userEmail: email
+        });
+
+    };
+}
+
+export const addEmailToMainCollection = (email) => {
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        const userId = getState().authenticate.userId;
+        // console.log(JSON.stringify(getState()));
+        //promise will be returned and stored in co1nst response
+        const response = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/email.json?auth=${token}` ,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId,
+                    email
+                })
+            });
+
+        const resData= await response.json();
+        console.log("here is the resData: " + resData);
+
+
+        if (!response.ok) {
+            throw new Error('Something went wrong adding email to main collection!');
+        }
+
+        //action to change state
+        dispatch({
+            type: ADD_EMAIL_TO_MAIN_COLLECTION,
+            userEmail: email
+        });
+
+    };
 }

@@ -6,7 +6,9 @@ import FooterButton from "../components/FooterButton";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
 import * as recipeActions from "../store/actions/recipeAction";
 import * as groupActions from "../store/actions/groupAction";
+import * as authActions from "../store/actions/authAction";
 import {useDispatch} from "react-redux";
+import {store} from "../App";
 
 function HomeScreen(props) {
     const dispatch = useDispatch();
@@ -14,8 +16,11 @@ function HomeScreen(props) {
     useEffect(() => {
         dispatch(recipeActions.getUserRecipes());
         dispatch(recipeActions.getAllRecipes());
-        dispatch(groupActions.setUserGroups())
+        dispatch(groupActions.setUserGroups());
+        dispatch(authActions.getAllEmails());
+        console.log(JSON.stringify(store.getState()));
     }, [])
+
 
     return (
         <View style={styles.screen}>

@@ -82,7 +82,6 @@ export default (state = initialState, action) => {
 
             //checking if the search is empty, in which case I want to display all recipes
             if (action.searchTerm === "") {
-                console.log("returning full list state, userRecipes: " + state.userRecipes);
                 return {...state, currentUserRecipes: state.userRecipes, currentAllRecipes: state.recipeList};
             }
 

@@ -2,9 +2,9 @@
   "expoServerPort": 19000,
   "packagerPort": 19000,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerNgrokUrl": "https://6v-iwm.anonymous.chefspocketbook.exp.direct",
+  "packagerNgrokUrl": "https://packager.6v-iwm.anonymous.chefspocketbook.exp.direct",
+  "ngrokPid": 19376,
   "webpackServerPort": null,
   "devToolsPort": 19002
 }
