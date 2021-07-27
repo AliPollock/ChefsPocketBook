@@ -91,7 +91,7 @@ function GroupScreen(props) {
                     <TouchableCmp style={styles.touchable} onPress={() => {
                         props.navigation.navigate({
                             routeName: 'GroupMembers',
-                            params: {groupId: props.navigation.getParam("mainCollectionId")}
+                            params: {mainCollectionGroupId: props.navigation.getParam("mainCollectionId")}
                         });
                     }}>
                         <View style={styles.touchable}>

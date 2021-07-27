@@ -73,7 +73,8 @@ function UserRecipesScreen(props) {
                             isDairyFree: itemData.item.isDairyFree,
                             photos: itemData.item.photos,
                             groupName: itemData.item.groupName,
-                            isUserRecipe: isUserRecipe
+                            isUserRecipe: isUserRecipe,
+                            isGroupRecipe: false
                         }
                     });
                 }}

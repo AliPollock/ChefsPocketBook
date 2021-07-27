@@ -7,7 +7,7 @@ import {
     Button,
     FlatList,
     Platform,
-    TouchableNativeFeedback, Dimensions
+    TouchableNativeFeedback, Dimensions, Alert
 } from 'react-native';
 import {store} from "../App";
 import {useDispatch, useSelector} from "react-redux";
@@ -63,9 +63,14 @@ function GroupMembersScreen(props) {
                             </View>
                             <View>
                                 {itemData.item.userId === store.getState().authenticate.userId ?
-                                <View></View> : <MyButton title="Remove Member" onPress={()=> {
-                                    dispatch(groupActions.removeMemberFromGroup(itemData.item.userId))
-                                    }}/>
+                                    <View></View> :
+                                    <MyButton
+                                        title="Remove Member"
+                                        onPress={()=> {
+                                            dispatch(groupActions.removeMemberFromGroup(itemData.item.userId, props.navigation.getParam("mainCollectionGroupId")));
+                                            Alert.alert(itemData.item.email + " member removed from the group.")
+                                        }}
+                                    />
                             }
                             </View>
                         </View>

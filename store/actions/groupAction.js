@@ -6,7 +6,7 @@ import {store} from "../../App";
 export const CREATE_GROUP = 'CREATE_GROUP';
 export const ADD_MEMBER_TO_GROUP = 'ADD_MEMBER_TO_GROUP';
 export const ADD_GROUP_TO_COLLECTION = 'ADD_GROUP_TO_COLLECTION';
-export const REMOVE_USER_FROM_GROUP = 'REMOVE_USER_FROM_GROUP';
+export const REMOVE_MEMBER_FROM_GROUP = 'REMOVE_MEMBER_FROM_GROUP';
 export const ADD_RECIPE_TO_GROUP = 'ADD_RECIPE_TO_GROUP';
 export const REMOVE_RECIPE_FROM_GROUP = 'REMOVE_RECIPE_FROM_GROUP';
 export const SET_USER_GROUPS = 'SET_USER_GROUPS';
@@ -23,7 +23,6 @@ export const createGroup = (
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
-        console.log("creating groupName: " + groupName)
 
         //promise will be returned and stored in response
         const response = await fetch(
@@ -124,8 +123,90 @@ export const addMemberToGroup = (item, mainCollectionGroupId, groupName) => {
     return {type: ADD_MEMBER_TO_GROUP};
 }
 
-export const removeMemberFromGroup = (userId) => {
-    return {type: REMOVE_USER_FROM_GROUP};
+export const removeMemberFromGroup = (userId, mainCollectionGroupId) => {
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        let memberGroupId;
+
+        try {
+            const response = await fetch(
+                `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/groups/${mainCollectionGroupId}/members.json?auth=${token}`);
+
+            const resData = await response.json();
+
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+
+        for (const key in resData) {
+            if (resData[key].userId === userId) {
+                memberGroupId = key
+            }
+        }
+        } catch(err) {
+            throw(err)
+        }
+
+        // console.log(memberGroupId)
+
+        const res = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/groups/${mainCollectionGroupId}/members/${memberGroupId}.json?auth=${token}` ,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+
+        // console.log(JSON.stringify(res))
+
+        dispatch({type: REMOVE_MEMBER_FROM_GROUP, userId: userId});
+
+        dispatch(removeGroupFromUser(userId, mainCollectionGroupId))
+    }
+}
+
+export const removeGroupFromUser = (userId, mainCollectionGroupId) => {
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        let groupId;
+
+        try {
+            const response = await fetch(
+                `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/${userId}/groups.json?auth=${token}`);
+
+            const resData = await response.json();
+
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+
+            for (const key in resData) {
+                if (resData[key].mainCollectionId === mainCollectionGroupId) {
+                    groupId = key
+                }
+            }
+        } catch (err) {
+            throw(err)
+        }
+
+        // console.log(groupId)
+
+        const res = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/${userId}/groups/${groupId}.json?auth=${token}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+
+        // console.log(JSON.stringify(res))
+
+        dispatch({type: DO_NOTHING});
+    }
 }
 export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
 
@@ -202,8 +283,24 @@ export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
 
     };
 }
-export const removeRecipeFromGroup = () => {
-    return {type: REMOVE_RECIPE_FROM_GROUP};
+export const removeRecipeFromGroup = (groupId, recipeId) => {
+
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        const res = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/groups/${groupId}/recipes/${recipeId}.json?auth=${token}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+
+
+
+        dispatch({type: REMOVE_RECIPE_FROM_GROUP, groupId: groupId, recipeId: recipeId});
+    };
 }
 
 export const setUserGroups = () => {
@@ -253,7 +350,7 @@ export const getGroupMembers = (groupId) => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
-        console.log("in getGroup members")
+
 
         try {
             const response = await fetch(
@@ -267,13 +364,12 @@ export const getGroupMembers = (groupId) => {
                 throw new Error('Something went wrong!');
             }
 
-            console.log("resData: " + JSON.stringify(resData));
+
 
             for (const key in resData) {
                 groupMembers.push(resData[key]);
             }
 
-            console.log("groupMembers: " + JSON.stringify(groupMembers));
 
             dispatch({type: SET_GROUP_MEMBERS, groupMembers: groupMembers});
         } catch(err) {
@@ -325,7 +421,6 @@ export const getGroupRecipes = (groupId) => {
                     )
                 );
             }
-            console.log(JSON.stringify(groupRecipes) + " the getGroupRecipes Action");
 
             dispatch({type: SET_GROUP_RECIPES, groupRecipes: groupRecipes});
         } catch(err) {
@@ -357,7 +452,7 @@ export const addGroupToCollection = (
             });
 
         const resData= await response.json();
-        console.log("adding group to collection: " + resData);
+
 
 
         if (!response.ok) {

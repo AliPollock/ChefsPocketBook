@@ -141,7 +141,8 @@ const GroupNavigator = createStackNavigator({
         navigationOptions: {}
     },
     GroupRecipes: GroupRecipesScreen,
-    GroupMembers: GroupMembersScreen
+    GroupMembers: GroupMembersScreen,
+    GroupRecipe: RecipeScreen
 
 },{
     initialRouteName: 'AllGroups',

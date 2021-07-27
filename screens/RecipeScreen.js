@@ -10,8 +10,10 @@ import Colors from "../constants/Colors";
 import {Rating} from "react-native-ratings";
 import MyButton from "../components/UIComponents/MyButton";
 import MyTabButton from "../components/UIComponents/MyTabButton";
+import * as groupActions from "../store/actions/groupAction";
 
 function RecipeScreen(props) {
+    console.log("groupId: " + props.navigation.getParam('groupId') + " recipeId:" + props.navigation.getParam('recipeId') + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     //const that keeps charge of if the recipe is a user recipe
     const [isUserRecipe, setIsUserRecipe] = useState(props.navigation.getParam('isUserRecipe'))
@@ -119,6 +121,22 @@ function RecipeScreen(props) {
                     }
                 </Text>
             </View>
+            <View>
+                {props.navigation.getParam('isGroupRecipe') ?
+                    <MyButton title="Remove Group Recipe" onPress={() => {
+                        dispatch(groupActions.removeRecipeFromGroup( props.navigation.getParam('groupId'), props.navigation.getParam('recipeId')));
+                        props.navigation.navigate({
+                            routeName: 'Group',
+                            params: {
+                                groupId: props.navigation.getParam("groupId"),
+                                groupName: props.navigation.getParam("groupName"),
+                                mainCollectionId: props.navigation.getParam("mainCollectionId")
+                            }
+                        });
+                    }}/>
+                    : <View/>
+                }
+            </View>
         </View>
     );
 }
@@ -170,20 +188,22 @@ RecipeScreen.navigationOptions = (navigationData) => {
     const title = navigationData.navigation.getParam('title');
     const isUserRecipe = navigationData.navigation.getParam('isUserRecipe');
     const toggleIsUserRecipe = navigationData.navigation.getParam('toggleIsUserRecipe');
+    const groupRecipe = navigationData.navigation.getParam('isGroupRecipe');
 
     return{
         headerTitle: title,
         headerRight: () => (
-            <HeaderButtons
-                    HeaderButtonComponent={isUserRecipe? HeaderButtonSmall: HeaderButtonLarge}>
+                    <HeaderButtons
 
-                    <Item
-                        title='userRecipe'
-                        iconName={isUserRecipe ? 'pencil-sharp' : 'md-add-circle-outline'}
-                        onPress={toggleIsUserRecipe}
-                    />
-            </HeaderButtons>
-
+                        HeaderButtonComponent={isUserRecipe ? HeaderButtonSmall : HeaderButtonLarge}>
+                        { groupRecipe ?<View></View> :
+                        <Item
+                            title='userRecipe'
+                            iconName={isUserRecipe ? 'pencil-sharp' : 'md-add-circle-outline'}
+                            onPress={toggleIsUserRecipe}
+                        />
+                             }
+                    </HeaderButtons>
 
         )
     };

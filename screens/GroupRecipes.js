@@ -11,7 +11,7 @@ import Colors from "../constants/Colors";
 import {store} from "../App";
 
 function GroupRecipesScreen(props) {
-    console.log(JSON.stringify(store.getState()));
+    console.log(JSON.stringify(store.getState().groups.groupRecipes));
 
     const dispatch = useDispatch();
     dispatch(groupActions.getGroupRecipes(props.navigation.getParam("mainCollectionId")))
@@ -45,7 +45,7 @@ function GroupRecipesScreen(props) {
             <RecipeCard
                 onSelect={() => {
                     props.navigation.navigate({
-                        routeName: 'Recipe',
+                        routeName: 'GroupRecipe',
                         params: {
                             recipeId: itemData.item.id,
                             mainCollectionId: itemData.item.mainCollectionId,
@@ -65,7 +65,9 @@ function GroupRecipesScreen(props) {
                             isDairyFree: itemData.item.isDairyFree,
                             photos: itemData.item.photos,
                             groupName: itemData.item.groupName,
-                            isUserRecipe: isUserRecipe
+                            isUserRecipe: false,
+                            isGroupRecipe: true,
+                            groupId: props.navigation.getParam("mainCollectionId")
                         }
                     });
                 }}

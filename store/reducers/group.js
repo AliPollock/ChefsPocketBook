@@ -2,7 +2,7 @@ import {
     CREATE_GROUP,
     ADD_MEMBER_TO_GROUP,
     ADD_GROUP_TO_COLLECTION,
-    REMOVE_USER_FROM_GROUP,
+    REMOVE_MEMBER_FROM_GROUP,
     ADD_RECIPE_TO_GROUP,
     REMOVE_RECIPE_FROM_GROUP,
     SET_USER_GROUPS,
@@ -12,6 +12,7 @@ import {
 } from "../actions/groupAction";
 import React, {useState, useEffect, useCallback, useReducer} from 'react';
 import Group from "../../models/Group";
+import {StackActions as updatedRecipes} from "react-navigation";
 
 const initialState = {
     userGroups: [],
@@ -75,12 +76,26 @@ export default (state = initialState, action) => {
                 action.groupData.id,
                 action.groupData.mainCollectionId,
                 action.groupData.groupName);
-            console.log("new Group: " + newGroup);
             return {...state, userGroups: state.userGroups.concat(newGroup)};
-        case REMOVE_USER_FROM_GROUP:
-            return state;
+        case REMOVE_MEMBER_FROM_GROUP:
+            const newGroupMembers = []
+            for(let key in state.groupMembers) {
+                if ( state.groupMembers[key].userId !== action.userId) {
+                    newGroupMembers.push(state.groupMembers[key])
+                }
+            }
+            return {...state, groupMembers: newGroupMembers};
         case REMOVE_RECIPE_FROM_GROUP:
-            return state;
+            let updatedGroupRecipes = []
+            console.log("action.recipeID: " + action.recipeId)
+            for (let key in state.groupRecipes) {
+                console.log("state.groupRecipes[key]: " + JSON.stringify(state.groupRecipes[key]))
+                if (state.groupRecipes[key].id !== action.recipeId ) {
+                    updatedGroupRecipes.push(state.groupRecipes[key])
+                }
+            }
+            console.log("updatedGroupRecipe: " + JSON.stringify(updatedGroupRecipes))
+            return {...state, groupRecipes: updatedGroupRecipes};
         case SET_GROUP_MEMBERS:
             return {...state, groupMembers: action.groupMembers};
         default:
