@@ -4,6 +4,8 @@ import Colors from '../constants/Colors';
 import React, {useEffect} from "react";
 import {useDispatch} from 'react-redux';
 import * as authActions from '../store/actions/authAction'
+import * as recipeActions from "../store/actions/recipeAction";
+import * as groupActions from "../store/actions/groupAction";
 
 function LandingScreen(props) {
     const dispatch = useDispatch();
@@ -32,8 +34,8 @@ function LandingScreen(props) {
             const expirationTime = expiryDate.getTime() - new Date().getTime();
 
             //Valid credentials
-            props.navigation.navigate('App');
             dispatch(authActions.authenticate(userId, token, userEmail, expirationTime));
+            props.navigation.navigate('App');
         };
 
         tryLogin();

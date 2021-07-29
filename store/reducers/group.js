@@ -87,14 +87,14 @@ export default (state = initialState, action) => {
             return {...state, groupMembers: newGroupMembers};
         case REMOVE_RECIPE_FROM_GROUP:
             let updatedGroupRecipes = []
-            console.log("action.recipeID: " + action.recipeId)
+            // console.log("action.recipeID: " + action.recipeId)
             for (let key in state.groupRecipes) {
                 console.log("state.groupRecipes[key]: " + JSON.stringify(state.groupRecipes[key]))
                 if (state.groupRecipes[key].id !== action.recipeId ) {
                     updatedGroupRecipes.push(state.groupRecipes[key])
                 }
             }
-            console.log("updatedGroupRecipe: " + JSON.stringify(updatedGroupRecipes))
+            // console.log("updatedGroupRecipe: " + JSON.stringify(updatedGroupRecipes))
             return {...state, groupRecipes: updatedGroupRecipes};
         case SET_GROUP_MEMBERS:
             return {...state, groupMembers: action.groupMembers};

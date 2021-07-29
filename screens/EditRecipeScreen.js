@@ -6,11 +6,13 @@ import {store} from "../App";
 import Colors from "../constants/Colors";
 import {Ionicons} from '@expo/vector-icons';
 import {Rating} from 'react-native-ratings';
-import {Provider} from "react-native-paper";
+import {Modal, Portal, Provider} from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import FooterButton from "../components/FooterButton";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import MyButton from "../components/UIComponents/MyButton";
+import {fontSize, justifyContent, marginBottom} from "styled-system";
 
 
 //action type for reducer which will validate multiple fields at once
@@ -85,11 +87,21 @@ const formReducer = (state, action) => {
 function EditRecipeScreen(props) {
 
     //get the current id of recipe from navigation params (if it doesn't exist, it will be null
-    const recipeId = props.navigation.getParam('recipeId');
+    let recipeId = props.navigation.getParam('recipeId')
+    const mainCollectionId = props.navigation.getParam('mainCollectionId')
+
     //check if recipe id is in user recipes to pre-populate form
     const selectedRecipe = useSelector(
         state => state.recipes.userRecipes.find(recipe => recipe.id === recipeId)
     );
+
+    //description modal state management
+    const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
+    const showIngredientsModal = () => setIngredientsModalVisible(true);
+    const hideIngredientsModal = () => setIngredientsModalVisible(false);
+
+
+    console.log("selectedRecipe: " + JSON.stringify(selectedRecipe))
 
 
     //state to keep track of ratings
@@ -135,7 +147,7 @@ function EditRecipeScreen(props) {
     useEffect(() => {
         props.navigation.setParams({ submit: submitHandler });
     }, [submitHandler]);
-    
+
 
     /*form state will change with any change in any input and will call the formReducer upon the change*/
     /*using array destructuring here to save the below into the formState variable and the dispatchFormState is a function which will act upon it*/
@@ -157,8 +169,7 @@ function EditRecipeScreen(props) {
             isVegetarian: selectedRecipe ? selectedRecipe.isVegetarian : false,
             isGlutenFree: selectedRecipe ? selectedRecipe.isGlutenFree : false,
             isDairyFree: selectedRecipe ? selectedRecipe.isDairyFree : false,
-            photos: selectedRecipe ? selectedRecipe.photos : '',
-            groupName: selectedRecipe ? selectedRecipe.groupName : ''
+            isPublic: selectedRecipe ? selectedRecipe.isPublic : true
 
         },
         /*this object stores whether the current text in the form is valid or not corresponding with each field*/
@@ -177,8 +188,7 @@ function EditRecipeScreen(props) {
             isVegetarian: true,
             isGlutenFree: true,
             isDairyFree: true,
-            photos: true,
-            groupName: true
+            isPublic: true
         },
         inputTouched: {
             title: false,
@@ -195,8 +205,7 @@ function EditRecipeScreen(props) {
             isVegetarian: false,
             isGlutenFree: false,
             isDairyFree: false,
-            photos: false,
-            groupName: false
+            isPublic: false
         },
         formIsValid: selectedRecipe ? true: false
     });
@@ -214,6 +223,7 @@ function EditRecipeScreen(props) {
             dispatch(
                 recipeActions.updateRecipe(
                     recipeId,
+                    mainCollectionId,
                     formState.inputValues.title,
                     formState.inputValues.description,
                     formState.inputValues.ingredients,
@@ -228,8 +238,7 @@ function EditRecipeScreen(props) {
                     formState.inputValues.isVegetarian,
                     formState.inputValues.isGlutenFree,
                     formState.inputValues.isDairyFree,
-                    formState.inputValues.photos,
-                    formState.inputValues.groupName
+                    formState.inputValues.isPublic
                 )
             );
         } else {
@@ -250,14 +259,16 @@ function EditRecipeScreen(props) {
                     formState.inputValues.isVegetarian,
                     formState.inputValues.isGlutenFree,
                     formState.inputValues.isDairyFree,
-                    formState.inputValues.photos,
-                    formState.inputValues.groupName
+                    formState.inputValues.isPublic
                 )
             );
         }
-        props.navigation.goBack();
+        props.navigation.navigate({
+            routeName: 'Home'
+        });
     }, [
         dispatch,
+        mainCollectionId,
         recipeId,
         formState.inputValues.title,
         formState.inputValues.description,
@@ -273,175 +284,209 @@ function EditRecipeScreen(props) {
         formState.inputValues.isVegetarian,
         formState.inputValues.isGlutenFree,
         formState.inputValues.isDairyFree,
-        formState.inputValues.photos,
-        formState.inputValues.groupName
+        formState.inputValues.isPublic
     ]);
 
 
 
 
     return (
-        <View style={styles.screen}>
-        <ScrollView >
-            <View style={styles.form}>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Title</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.title}
-                        onChangeText={textChangeHandler.bind(this, 'title')}
-                        keyboardType={'default'}
-                        autoCapitalize={'sentences'}
-                        autoCorrect
-                        onFocus={touchHandler.bind(this, 'title')}
-                        returnKeyType="next"
-                    />
-                    {!formState.inputValidities.title && formState.inputTouched.title && <Text style={styles.warningText}>Please enter a valid title</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.description}
-                        onChangeText={textChangeHandler.bind(this, 'description')}
-                        onFocus={touchHandler.bind(this, 'description')}
-                    />
-                    {!formState.inputValidities.description && formState.inputTouched.description && <Text style={styles.warningText}>Please enter a valid description</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Ingredients</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.ingredients}
-                        onChangeText={textChangeHandler.bind(this, 'ingredients')}
-                        onFocus={touchHandler.bind(this, 'ingredients')}
-                    />
-                    {!formState.inputValidities.ingredients && formState.inputTouched.ingredients && <Text style={styles.warningText}>Please enter valid ingredients</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Directions</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.directions}
-                        onChangeText={textChangeHandler.bind(this, 'directions')}
-                        onFocus={touchHandler.bind(this, 'directions')}
-                    />
-                    {!formState.inputValidities.directions && formState.inputTouched.directions && <Text style={styles.warningText}>Please enter valid Directions</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Categories</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.categories}
-                        onChangeText={textChangeHandler.bind(this, 'categories')}
-                        onFocus={touchHandler.bind(this, 'categories')}
-                    />
-                    {!formState.inputValidities.categories && formState.inputTouched.categories && <Text style={styles.warningText}>Please enter valid Categories</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Servings</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.servings}
-                        onChangeText={textChangeHandler.bind(this, 'servings')}
-                        onFocus={touchHandler.bind(this, 'servings')}
-                    />
-                    {!formState.inputValidities.servings && formState.inputTouched.servings && <Text style={styles.warningText}>Please enter valid Servings</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Notes</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.notes}
-                        onChangeText={textChangeHandler.bind(this, 'notes')}
-                        onFocus={touchHandler.bind(this, 'notes')}
-                    />
-                    {!formState.inputValidities.notes && formState.inputTouched.notes && <Text style={styles.warningText}>Please enter valid Notes</Text>}
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Preparation Time</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={formState.inputValues.preparationTime}
-                        onChangeText={textChangeHandler.bind(this, 'preparationTime')}
-                        onFocus={touchHandler.bind(this, 'preparationTime')}
-                    />
-                    {!formState.inputValidities.preparationTime && formState.inputTouched.preparationTime && <Text style={styles.warningText}>Please enter a valid Preparation Time</Text>}
+        <Provider>
+            <View style={styles.screen}>
+            <ScrollView >
+                <View style={styles.form}>
                     <View style={styles.formControl}>
-                        <Text style={styles.label}>Cook Time</Text>
+                        <Text style={styles.label}>Title</Text>
                         <TextInput
                             style={styles.input}
-                            value={formState.inputValues.cookTime}
-                            onChangeText={textChangeHandler.bind(this, 'cookTime')}
-                            onFocus={touchHandler.bind(this, 'cookTime')}
+                            value={formState.inputValues.title}
+                            onChangeText={textChangeHandler.bind(this, 'title')}
+                            keyboardType={'default'}
+                            autoCapitalize={'sentences'}
+                            autoCorrect
+                            onFocus={touchHandler.bind(this, 'title')}
+                            returnKeyType="next"
                         />
-                        {!formState.inputValidities.cookTime && formState.inputTouched.cookTime && <Text style={styles.warningText}> Please enter a valid Cook Time</Text>}
+                        {!formState.inputValidities.title && formState.inputTouched.title && <Text style={styles.warningText}>Please enter a valid title</Text>}
                     </View>
-                    <Text style={styles.label}>Rating</Text>
-                    <Rating
-                    ratingCount={5}
-                    showRating
-                    onFinishRating={setCurrentRating}
-                    tintColor={Colors.accentColor}
-                    />
                     <View style={styles.formControl}>
-                        <Text style={styles.label}>Group Name</Text>
+                        <Text style={styles.label}>Description</Text>
                         <TextInput
                             style={styles.input}
-                            value={formState.inputValues.groupName}
-                            onChangeText={textChangeHandler.bind(this, 'groupName')}
-                            onFocus={touchHandler.bind(this, 'groupName')}
+                            value={formState.inputValues.description}
+                            onChangeText={textChangeHandler.bind(this, 'description')}
+                            onFocus={touchHandler.bind(this, 'description')
+                            }
                         />
-                        {!formState.inputValidities.groupName && formState.inputTouched.groupName && <Text style={styles.warningText}>Please enter valid Group Name</Text>}
+                        {!formState.inputValidities.description && formState.inputTouched.description && <Text style={styles.warningText}>Please enter a valid description</Text>}
                     </View>
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Vegan</Text>
-                    <Switch
-                        label="Vegan"
-                        value={formState.inputValues.isVegan}
-                        onValueChange={switchChangeHandler.bind(this, 'isVegan')}
+                    <Portal>
+                        <Modal visible={ingredientsModalVisible} onDismiss={hideIngredientsModal} contentContainerStyle={styles.modalStyle}>
+                            <Text style={styles.modalTitle}>Ingredients</Text>
+                                <TextInput
+                                    style={styles.modalInput}
+                                    value={formState.inputValues.description}
+                                    onChangeText={textChangeHandler.bind(this, 'ingredients')}
+                                    onFocus={
+                                        touchHandler.bind(this, 'ingredients')
+                                    }
+                                    multiline
+                                    numberOfLines={18}
+                                />
+                            <View style={styles.modalButtonContainer}>
+                                <MyButton style={{margin: '5%'}} title="confirm" onPress={() => {console.log("clicked")}}
+                                />
+                                <MyButton style={{margin: '5%'}} title="cancel" onPress={hideIngredientsModal}/>
+                            </View>
+                        </Modal>
+                    </Portal>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Ingredients</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.ingredients}
+                            onChangeText={textChangeHandler.bind(this, 'ingredients')}
+                            onFocus={
+                                // touchHandler.bind(this, 'ingredients')
+                                showIngredientsModal
+                            }
+                        />
+                        {!formState.inputValidities.ingredients && formState.inputTouched.ingredients && <Text style={styles.warningText}>Please enter valid ingredients</Text>}
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Directions</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.directions}
+                            onChangeText={textChangeHandler.bind(this, 'directions')}
+                            onFocus={touchHandler.bind(this, 'directions')}
+                            onContentSizeChange = {scrollView.scrollToEnd({animated:true})}
+                        />
+                        {!formState.inputValidities.directions && formState.inputTouched.directions && <Text style={styles.warningText}>Please enter valid Directions</Text>}
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Categories</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.categories}
+                            onChangeText={textChangeHandler.bind(this, 'categories')}
+                            onFocus={touchHandler.bind(this, 'categories')}
+                        />
+                        {!formState.inputValidities.categories && formState.inputTouched.categories && <Text style={styles.warningText}>Please enter valid Categories</Text>}
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Servings</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.servings}
+                            onChangeText={textChangeHandler.bind(this, 'servings')}
+                            onFocus={touchHandler.bind(this, 'servings')}
+                        />
+                        {!formState.inputValidities.servings && formState.inputTouched.servings && <Text style={styles.warningText}>Please enter valid Servings</Text>}
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Notes</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.notes}
+                            onChangeText={textChangeHandler.bind(this, 'notes')}
+                            onFocus={touchHandler.bind(this, 'notes')}
+                        />
+                        {!formState.inputValidities.notes && formState.inputTouched.notes && <Text style={styles.warningText}>Please enter valid Notes</Text>}
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Preparation Time</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.preparationTime}
+                            onChangeText={textChangeHandler.bind(this, 'preparationTime')}
+                            onFocus={touchHandler.bind(this, 'preparationTime')}
+                        />
+                        {!formState.inputValidities.preparationTime && formState.inputTouched.preparationTime && <Text style={styles.warningText}>Please enter a valid Preparation Time</Text>}
+                        <View style={styles.formControl}>
+                            <Text style={styles.label}>Cook Time</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={formState.inputValues.cookTime}
+                                onChangeText={textChangeHandler.bind(this, 'cookTime')}
+                                onFocus={touchHandler.bind(this, 'cookTime')}
+                            />
+                            {!formState.inputValidities.cookTime && formState.inputTouched.cookTime && <Text style={styles.warningText}> Please enter a valid Cook Time</Text>}
+                        </View>
+                        <Text style={styles.label}>Rating</Text>
+                        <Rating
+                        ratingCount={5}
+                        showRating
+                        onFinishRating={setCurrentRating}
+                        tintColor={Colors.accentColor}
+                        />
+                    </View>
+                    <View style={styles.formControl}>
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Vegan</Text>
+                            <Switch
+                                label="Vegan"
+                                value={formState.inputValues.isVegan}
+                                onValueChange={switchChangeHandler.bind(this, 'isVegan')}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.formControl}>
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Vegetarian</Text>
+                            <Switch
+                                label="Vegetarian"
+                                value={formState.inputValues.isVegetarian}
+                                onValueChange={switchChangeHandler.bind(this, 'isVegetarian')}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.formControl}>
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Gluten Free</Text>
+                            <Switch
+                                label="Gluten Free"
+                                value={formState.inputValues.isGlutenFree}
+                                onValueChange={switchChangeHandler.bind(this, 'isGlutenFree')}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.formControl}>
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Dairy Free</Text>
+                            <Switch
+                                label="Dairy Free"
+                                value={formState.inputValues.isDairyFree}
+                                onValueChange={switchChangeHandler.bind(this, 'isDairyFree')}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.formControl}>
+                        <View style={styles.switchContainer}>
+                            <Text style={styles.label}>Public</Text>
+                            <Switch
+                                label="Public"
+                                value={formState.inputValues.isPublic}
+                                onValueChange={switchChangeHandler.bind(this, 'isPublic')}
+                            />
+                        </View>
+                    </View>
+                    <MyButton style={styles.submitButton} title={selectedRecipe? "Confirm Changes":"Add Recipe"} onPress={() => {
+                        dispatch(submitHandler)}}
                     />
                 </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Vegetarian</Text>
-                    <Switch
-                        label="Vegetarian"
-                        value={formState.inputValues.isVegetarian}
-                        onValueChange={switchChangeHandler.bind(this, 'isVegetarian')}
-                    />
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Gluten Free</Text>
-                    <Switch
-                        label="Gluten Free"
-                        value={formState.inputValues.isGlutenFree}
-                        onValueChange={switchChangeHandler.bind(this, 'isGlutenFree')}
-                    />
-                </View>
-                <View style={styles.formControl}>
-                    <Text style={styles.label}>Dairy Free</Text>
-                    <Switch
-                        label="Dairy Free"
-                        value={formState.inputValues.isDairyFree}
-                        onValueChange={switchChangeHandler.bind(this, 'isDairyFree')}
-                    />
-                </View>
-                <Button title={"Add Recipe"} onPress={() => {
-                    dispatch(submitHandler)}}
-                />
-            </View>
-        </ScrollView>
-        <FooterButton
-            iconName={'home'}
-            size={40}
-            onSelect={() =>{
-                props.navigation.navigate({
-                    routeName: 'Home'
-                });
-            }}
-        />
-    </View>
+            </ScrollView>
+            <FooterButton
+                iconName={'home'}
+                size={40}
+                onSelect={() =>{
+                    props.navigation.navigate({
+                        routeName: 'Home'
+                    });
+                }}
+            />
+        </View>
+    </Provider>
     );
 }
 
@@ -471,13 +516,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     formControl: {
+        marginTop: 15,
         width: '100%',
         justifyContent: 'center'
     },
     label: {
         color: 'white',
         fontFamily: 'open-sans-bold',
-        marginVertical: 8
+        marginVertical: 8,
+        fontSize: 16
     },
     input: {
         paddingHorizontal: 2,
@@ -491,6 +538,42 @@ const styles = StyleSheet.create({
     },
     warningText: {
         color: 'white'
+    },
+    submitButton: {
+        marginTop: 30,
+        marginBottom: 60
+    },
+    switchContainer: {
+        margin: 15,
+        marginLeft: 40,
+        marginRight: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    modalInput: {
+        backgroundColor: Colors.accentColor,
+        borderColor: Colors.primaryColor,
+        borderWidth: 2,
+        color: 'white',
+        width: '100%',
+        height: '70%'
+    },
+    modalButtonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    modalStyle: {
+        backgroundColor: Colors.accentColor,
+        borderColor: Colors.primaryColor,
+        borderWidth: 2,
+        alignItems: 'center',
+        borderRadius: 15,
+    },
+    modalTitle: {
+        color: 'white',
+        margin: '5%',
+        fontSize: 20
     }
 });
 

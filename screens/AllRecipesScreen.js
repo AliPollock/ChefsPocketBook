@@ -22,6 +22,7 @@ function AllRecipesScreen(props) {
     const allRecipes = useSelector(state => state.recipes.currentAllRecipes)
 
 
+
     const searchChangeHandler = (text) => {
         setSearchState(text);
         dispatch(recipeActions.setCurrentRecipes(text));
@@ -30,11 +31,15 @@ function AllRecipesScreen(props) {
     //factor this function out into its own file
     function renderRecipeItem(itemData) {
 
-        //this will be need when it is refactored into its own file
-        // const userRecipes = useSelector(state => state.recipes.userRecipes);
-
         const isUserRecipe = userRecipes.some(recipe => recipe.mainCollectionId === itemData.item.id)
-        // console.log(itemData.item.title + ": is user recipe?: " + isUserRecipe + ",id: " + itemData.item.id)
+
+        //getting userRecipeId of item to pass to next screen
+        let recipeId;
+        for (let key in userRecipes) {
+            if(userRecipes[key].mainCollectionId === itemData.item.id){
+                recipeId = userRecipes[key].id
+            }
+        }
 
         return (
             <RecipeCard
@@ -42,7 +47,7 @@ function AllRecipesScreen(props) {
                     props.navigation.navigate({
                         routeName: 'Recipe',
                         params: {
-                            recipeId: itemData.item.id,
+                            recipeId: recipeId,
                             mainCollectionId: itemData.item.id,
                             title: itemData.item.title,
                             description: itemData.item.description,
@@ -58,10 +63,9 @@ function AllRecipesScreen(props) {
                             isVegetarian: itemData.item.isVegetarian,
                             isGlutenFree: itemData.item.isGlutenFree,
                             isDairyFree: itemData.item.isDairyFree,
-                            photos: itemData.item.photos,
-                            groupName: itemData.item.groupName,
                             isUserRecipe: isUserRecipe,
-                            isGroupRecipe: false
+                            isGroupRecipe: false,
+                            isPublic: itemData.item.isPublic
                         }
                     });
                 }}

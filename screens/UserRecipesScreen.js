@@ -71,8 +71,7 @@ function UserRecipesScreen(props) {
                             isVegetarian: itemData.item.isVegetarian,
                             isGlutenFree: itemData.item.isGlutenFree,
                             isDairyFree: itemData.item.isDairyFree,
-                            photos: itemData.item.photos,
-                            groupName: itemData.item.groupName,
+                            photos: itemData.item.isPublic,
                             isUserRecipe: isUserRecipe,
                             isGroupRecipe: false
                         }

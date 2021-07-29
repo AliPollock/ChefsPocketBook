@@ -225,8 +225,7 @@ export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
     const isVegetarian = recipe.isVegetarian
     const isGlutenFree = recipe.isGlutenFree
     const isDairyFree = recipe.isDairyFree
-    const photos = recipe.photos
-    const groupName = recipe.groupName
+    const isPublic = recipe.isPublic
     const mainCollectionId = recipe.mainCollectionId
 
 
@@ -262,8 +261,7 @@ export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
                     isVegetarian,
                     isGlutenFree,
                     isDairyFree,
-                    photos,
-                    groupName
+                    isPublic
                 })
             });
 
@@ -297,7 +295,7 @@ export const removeRecipeFromGroup = (groupId, recipeId) => {
             }
         );
 
-
+        dispatch(getGroupRecipes(groupId))
 
         dispatch({type: REMOVE_RECIPE_FROM_GROUP, groupId: groupId, recipeId: recipeId});
     };
@@ -416,8 +414,7 @@ export const getGroupRecipes = (groupId) => {
                     resData[key].isVegetarian,
                     resData[key].isGlutenFree,
                     resData[key].isDairyFree,
-                    resData[key].photos,
-                    resData[key].groupName
+                    resData[key].isPublic
                     )
                 );
             }

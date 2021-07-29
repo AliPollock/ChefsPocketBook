@@ -63,7 +63,7 @@ function GroupRecipesScreen(props) {
                             isVegetarian: itemData.item.isVegetarian,
                             isGlutenFree: itemData.item.isGlutenFree,
                             isDairyFree: itemData.item.isDairyFree,
-                            photos: itemData.item.photos,
+                            isPublic: itemData.item.isPublic,
                             groupName: itemData.item.groupName,
                             isUserRecipe: false,
                             isGroupRecipe: true,

@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import {fontSize, size} from "styled-system";
+import {borderWidth, fontSize, size} from "styled-system";
 import HeaderButtonSmall from "../components/HeaderButtonSmall";
 import {addRecipeToCollection, doNothing} from "../store/actions/recipeAction";
 import Colors from "../constants/Colors";
@@ -11,24 +11,33 @@ import {Rating} from "react-native-ratings";
 import MyButton from "../components/UIComponents/MyButton";
 import MyTabButton from "../components/UIComponents/MyTabButton";
 import * as groupActions from "../store/actions/groupAction";
+import {Ionicons} from "@expo/vector-icons";
+import {store} from "../App";
+import * as recipeActions from "../store/actions/recipeAction";
+import {Modal, Portal, Provider} from 'react-native-paper';
 
 function RecipeScreen(props) {
-    console.log("groupId: " + props.navigation.getParam('groupId') + " recipeId:" + props.navigation.getParam('recipeId') + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
     //const that keeps charge of if the recipe is a user recipe
     const [isUserRecipe, setIsUserRecipe] = useState(props.navigation.getParam('isUserRecipe'))
     const dispatch = useDispatch();
 
     const[currentViewTab, setCurrentViewTab] = useState("ingredients");
 
+    //modal state management
+    const [modalVisible, setModalVisible] = useState(false);
+    const showModal = () => setModalVisible(true);
+    const hideModal = () => setModalVisible(false);
+
     // function which handles a change in the toggleIsUser button
     const toggleIsUserRecipe = useCallback(() => {
+        console.log("checkingId")
         if (isUserRecipe) {
             dispatch(doNothing());
             props.navigation.navigate({
                     routeName: 'EditRecipe',
                     params: {
-                        recipeId: props.navigation.getParam('recipeId')
+                        recipeId: props.navigation.getParam('recipeId'),
+                        mainCollectionId: props.navigation.getParam('mainCollectionId'),
                     }
                 });
         } else {
@@ -48,11 +57,16 @@ function RecipeScreen(props) {
                 props.navigation.getParam('isVegetarian'),
                 props.navigation.getParam('isGlutenFree'),
                 props.navigation.getParam('isDairyFree'),
-                props.navigation.getParam('photos'),
-                props.navigation.getParam('groupName')
+                props.navigation.getParam('isPublic')
             ));
-            console.log(props.navigation.getParam('mainCollectionId'))
-            //need to reset isuserrecipe param to be true here
+            // console.log(props.navigation.getParam('mainCollectionId'))
+
+            /**in order to be able to update, need to have access to recipe in user collection
+             * therefore if the UserRecipes state slice is refreshed here, we can access the new entry in the edit screen**/
+
+            dispatch(recipeActions.getUserRecipes());
+
+            //need to reset isUserRecipe param to be true here so that the header button updates
             setIsUserRecipe(true);
             props.navigation.setParams({isUserRecipe: true})
         }
@@ -88,6 +102,7 @@ function RecipeScreen(props) {
     const recipeTitle = props.navigation.getParam('title')
 
     return (
+        <Provider>
         <View style={styles.screen}>
             <Text style={styles.title}>{recipeTitle}</Text>
             <Rating
@@ -137,7 +152,64 @@ function RecipeScreen(props) {
                     : <View/>
                 }
             </View>
+            <View style={styles.topBooleanBox}>
+                <View>
+                    {props.navigation.getParam("isVegan") ?
+                        <View style={styles.booleanBox}>
+                            <Text style={styles.title}>Vegan         </Text>
+                            <Ionicons name="checkbox" size={32} color={Colors.primaryColor}/>
+                        </View>
+                        : <View/>}
+                </View>
+                <View>
+                    {props.navigation.getParam("isVegetarian") ?
+                        <View style={styles.booleanBox}>
+                            <Text style={styles.title}>Vegetarian</Text>
+                            <Ionicons name="checkbox" size={32} color={Colors.primaryColor}/>
+                        </View>
+                        : <View/>}
+                </View>
+            </View>
+            <View style={styles.bottomBooleanBox}>
+                <View>
+                    {props.navigation.getParam("isGlutenFree") ?
+                        <View style={styles.booleanBox}>
+                            <Text style={styles.title}>GlutenFree</Text>
+                            <Ionicons name="checkbox" size={32} color={Colors.primaryColor}/>
+                        </View>
+                        : <View/>}
+                </View>
+                <View>
+                    {props.navigation.getParam("isDairyFree") ?
+                        <View style={styles.booleanBox}>
+                            <Text style={styles.title}>DairyFree</Text>
+                            <Ionicons name="checkbox" size={32} color={Colors.primaryColor}/>
+                        </View>
+                        : <View/>}
+                </View>
+            </View>
+            <View>
+                {isUserRecipe?
+                    <MyButton title="Delete recipe" onPress={showModal} />
+                    : <View/>
+                }
+            </View>
+                <Portal>
+                    <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
+                        <Text style={{color: 'white'}}>Are you sure you want to delete this recipe?</Text>
+                        <View style={styles.modalButtonContainer}>
+                        <MyButton style={{margin: '5%'}} title="confirm" onPress={() => {
+                            dispatch(recipeActions.deleteUserRecipe(props.navigation.getParam('recipeId')))
+                            props.navigation.navigate({
+                                routeName: 'Home'
+                            });
+                        }}/>
+                        <MyButton style={{margin: '5%'}} title="cancel" onPress={hideModal}/>
+                        </View>
+                    </Modal>
+                </Portal>
         </View>
+        </Provider>
     );
 }
 
@@ -148,7 +220,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        margin: 5,
+        margin: 10,
         color: 'white',
         fontFamily: 'open-sans-bold'
     },
@@ -173,7 +245,7 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         width: Dimensions.get('window').width,
-        height : Dimensions.get('window').height/2,
+        height : Dimensions.get('window').height*3/7,
         borderRadius: 5,
         overflow: 'hidden',
         marginVertical:10,
@@ -181,6 +253,33 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.26,
         shadowOffset: {width:0, height: 2},
         shadowRadius: 10,
+    },
+    booleanBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    topBooleanBox: {
+        marginLeft: '5%',
+        marginRight: '5%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    bottomBooleanBox: {
+        marginLeft: '5%',
+        marginRight: '5%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    containerStyle: {
+        backgroundColor: Colors.accentColor,
+        padding: 20,
+        borderColor: Colors.primaryColor,
+        borderWidth: 2,
+        alignItems: 'center',
+        borderRadius: 15,
+    },
+    modalButtonContainer: {
+        flexDirection: 'row'
     }
 });
 

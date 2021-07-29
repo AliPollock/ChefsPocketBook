@@ -16,8 +16,7 @@ class Recipe {
         isVegetarian,
         isGlutenFree,
         isDairyFree,
-        photos,
-        groupName
+        isPublic
         ) {
         this.id = id;
         this.mainCollectionId = mainCollectionId;
@@ -35,8 +34,7 @@ class Recipe {
         this.isVegetarian = isVegetarian;
         this.isGlutenFree = isGlutenFree;
         this.isDairyFree = isDairyFree;
-        this.photos = photos;
-        this.groupName = groupName;
+        this.isPublic = isPublic;
     }
 }
 

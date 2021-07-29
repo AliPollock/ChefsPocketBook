@@ -1,10 +1,11 @@
 //action identifiers
 import Recipe from "../../models/Recipe";
+import {REMOVE_RECIPE_FROM_GROUP} from "./groupAction";
 
 
 
 export const CREATE_RECIPE = 'CREATE_RECIPE';
-export const DELETE_RECIPE = 'DELETE_RECIPE';
+export const DELETE_USER_RECIPE = 'DELETE_USER_RECIPE';
 export const ADD_RECIPE_TO_COLLECTION = 'ADD_RECIPE_TO_COLLECTION';
 export const REMOVE_RECIPE_FROM_COLLECTION = 'REMOVE_RECIPE_FROM_COLLECTION';
 export const SET_USER_RECIPES = 'SET_USER_RECIPES';
@@ -21,8 +22,9 @@ export function doNothing(){
 }
 
 // action which takes the fields and updates an existing recipe
-export function updateRecipe(
-    id,
+export const updateRecipe = (
+    recipeId,
+    mainCollectionId,
     title,
     description,
     ingredients,
@@ -37,11 +39,57 @@ export function updateRecipe(
     isVegetarian,
     isGlutenFree,
     isDairyFree,
-    photos,
-    groupName
-) {
-    console.log("recipe updated code yet to be implemented!")
-    return {type: UPDATE_RECIPE, recipeId: id};
+    isPublic
+) => {
+    return async (dispatch, getState) => {
+
+        const token = getState().authenticate.token;
+        const userId = getState().authenticate.userId;
+        try {
+            const response = await fetch(
+                `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/${userId}/recipes/${recipeId}.json?auth=${token}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        mainCollectionId,
+                        description,
+                        ingredients,
+                        directions,
+                        categories,
+                        servings,
+                        notes,
+                        preparationTime,
+                        cookTime,
+                        rating,
+                        isVegan,
+                        isVegetarian,
+                        isGlutenFree,
+                        isDairyFree,
+                        isPublic
+                    })
+                });
+
+            const resData = await response.json();
+
+
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+
+            dispatch({
+                type: UPDATE_RECIPE
+            });
+
+        } catch(err) {
+            throw(err)
+        }
+
+        dispatch(getUserRecipes())
+    }
 
 }
 
@@ -61,8 +109,7 @@ export const createRecipe = (
     isVegetarian,
     isGlutenFree,
     isDairyFree,
-    photos,
-    groupName) => {
+    isPublic) => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         // console.log(getState())
@@ -89,8 +136,7 @@ export const createRecipe = (
                 isVegetarian,
                 isGlutenFree,
                 isDairyFree,
-                photos,
-                groupName
+                isPublic
             })
         });
 
@@ -122,8 +168,7 @@ export const createRecipe = (
                 isVegetarian,
                 isGlutenFree,
                 isDairyFree,
-                photos,
-                groupName
+                isPublic
             }
         });
 
@@ -144,8 +189,7 @@ export const createRecipe = (
                 isVegetarian,
                 isGlutenFree,
                 isDairyFree,
-                photos,
-                groupName)
+                isPublic)
         );
 
     };
@@ -189,8 +233,7 @@ export const getUserRecipes = () => {
                     resData[key].isVegetarian,
                     resData[key].isGlutenFree,
                     resData[key].isDairyFree,
-                    resData[key].photos,
-                    resData[key].groupName
+                    resData[key].isPublic
                     )
                 );
             }
@@ -199,9 +242,10 @@ export const getUserRecipes = () => {
                 type: SET_USER_RECIPES,
                 recipes: loadedRecipes
             });
+
         } catch(err) {
             throw(err)
-        };
+        }
     };
 };
 
@@ -225,27 +269,28 @@ export const getAllRecipes = () => {
             }
 
             for (const key in resData) {
-                loadedRecipes.push(new Recipe(
-                    key,
-                    resData[key].mainCollectionId,
-                    resData[key].title,
-                    resData[key].description,
-                    resData[key].ingredients,
-                    resData[key].directions,
-                    resData[key].categories,
-                    resData[key].servings,
-                    resData[key].notes,
-                    resData[key].preparationTime,
-                    resData[key].cookTime,
-                    resData[key].rating,
-                    resData[key].isVegan,
-                    resData[key].isVegetarian,
-                    resData[key].isGlutenFree,
-                    resData[key].isDairyFree,
-                    resData[key].photos,
-                    resData[key].groupName
-                    )
-                );
+                if(resData[key].isPublic === true) {
+                    loadedRecipes.push(new Recipe(
+                        key,
+                        resData[key].mainCollectionId,
+                        resData[key].title,
+                        resData[key].description,
+                        resData[key].ingredients,
+                        resData[key].directions,
+                        resData[key].categories,
+                        resData[key].servings,
+                        resData[key].notes,
+                        resData[key].preparationTime,
+                        resData[key].cookTime,
+                        resData[key].rating,
+                        resData[key].isVegan,
+                        resData[key].isVegetarian,
+                        resData[key].isGlutenFree,
+                        resData[key].isDairyFree,
+                        resData[key].isPublic
+                        )
+                    );
+                }
             }
 
             dispatch({
@@ -259,9 +304,27 @@ export const getAllRecipes = () => {
 };
 
 
-export const deleteRecipe = recipeId => {
-    console.log("delete code not yet implemented and not needed")
-    return {type: DELETE_RECIPE, recipeId: recipeId };
+export const deleteUserRecipe = recipeId => {
+    console.log("userId: " + recipeId);
+    return async (dispatch, getState) => {
+        const token = getState().authenticate.token;
+        const userId = getState().authenticate.userId;
+
+        const res = await fetch(
+            `https://chefspocketbook-259f1-default-rtdb.europe-west1.firebasedatabase.app/${userId}/recipes/${recipeId}.json?auth=${token}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }
+        );
+
+        dispatch(getUserRecipes())
+
+        dispatch({type: DELETE_USER_RECIPE});
+    };
+
 }
 
 //action which adds a recipe to the user's collection
@@ -281,8 +344,7 @@ export const addRecipeToCollection = (
     isVegetarian,
     isGlutenFree,
     isDairyFree,
-    photos,
-    groupName) => {
+    isPublic) => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
         const userId = getState().authenticate.userId;
@@ -312,8 +374,7 @@ export const addRecipeToCollection = (
                     isVegetarian,
                     isGlutenFree,
                     isDairyFree,
-                    photos,
-                    groupName
+                    isPublic
                 })
             });
 
@@ -345,14 +406,12 @@ export const addRecipeToCollection = (
                 isVegetarian,
                 isGlutenFree,
                 isDairyFree,
-                photos,
-                groupName
+                isPublic
             }
         });
 
 
     };
-    return {type: ADD_RECIPE_TO_COLLECTION, recipeId: id };
 }
 
 //action which removes a recipe from a user's collection

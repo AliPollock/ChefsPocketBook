@@ -1,11 +1,12 @@
 import {
     CREATE_RECIPE,
-    DELETE_RECIPE,
+    DELETE_USER_RECIPE,
     ADD_RECIPE_TO_COLLECTION,
     REMOVE_RECIPE_FROM_COLLECTION,
     SET_USER_RECIPES,
     SET_RECIPE_LIST,
-    SET_CURRENT_RECIPES } from "../actions/recipeAction";
+    SET_CURRENT_RECIPES,
+    UPDATE_RECIPE} from "../actions/recipeAction";
 import React, {useState, useEffect, useCallback, useReducer} from 'react';
 import Recipe from "../../models/Recipe";
 
@@ -38,13 +39,14 @@ export default (state = initialState, action) => {
                 action.recipeData.isVegetarian,
                 action.recipeData.isGlutenFree,
                 action.recipeData.isDairyFree,
-                action.recipeData.photos,
-                action.recipeData.groupName
+                action.recipeData.isPublic
             );
             // console.log("in the recipe reducer create-recipe");
             return {...state, recipes: state.recipeList.concat(newRecipe)};
-        case DELETE_RECIPE:
+        case DELETE_USER_RECIPE:
             console.log("/delete code not implemented, should not be possible for a user to remove a recipe from the main collection.");
+            return state;
+        case UPDATE_RECIPE:
             return state;
         case ADD_RECIPE_TO_COLLECTION:
             const newUserRecipe = new Recipe(
@@ -64,8 +66,7 @@ export default (state = initialState, action) => {
                 action.recipeData.isVegetarian,
                 action.recipeData.isGlutenFree,
                 action.recipeData.isDairyFree,
-                action.recipeData.photos,
-                action.recipeData.groupName
+                action.recipeData.isPublic
             );
             return {...state, recipes: state.userRecipes.concat(newUserRecipe)};
         case REMOVE_RECIPE_FROM_COLLECTION:
