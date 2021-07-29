@@ -13,6 +13,7 @@ import FooterButton from "../components/FooterButton";
 import HeaderButtonLarge from "../components/HeaderButtonLarge";
 import MyButton from "../components/UIComponents/MyButton";
 import {fontSize, justifyContent, marginBottom} from "styled-system";
+import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 
 
 //action type for reducer which will validate multiple fields at once
@@ -101,7 +102,7 @@ function EditRecipeScreen(props) {
     const hideIngredientsModal = () => setIngredientsModalVisible(false);
 
 
-    console.log("selectedRecipe: " + JSON.stringify(selectedRecipe))
+    // console.log("selectedRecipe: " + JSON.stringify(selectedRecipe))
 
 
     //state to keep track of ratings
@@ -291,9 +292,8 @@ function EditRecipeScreen(props) {
 
 
     return (
-        <Provider>
             <View style={styles.screen}>
-            <ScrollView >
+            <ScrollView>
                 <View style={styles.form}>
                     <View style={styles.formControl}>
                         <Text style={styles.label}>Title</Text>
@@ -315,34 +315,15 @@ function EditRecipeScreen(props) {
                             style={styles.input}
                             value={formState.inputValues.description}
                             onChangeText={textChangeHandler.bind(this, 'description')}
-                            onFocus={touchHandler.bind(this, 'description')
-                            }
+                            onFocus={touchHandler.bind(this, 'description')}
+                            maxLength={30}
+
                         />
                         {!formState.inputValidities.description && formState.inputTouched.description && <Text style={styles.warningText}>Please enter a valid description</Text>}
                     </View>
-                    <Portal>
-                        <Modal visible={ingredientsModalVisible} onDismiss={hideIngredientsModal} contentContainerStyle={styles.modalStyle}>
-                            <Text style={styles.modalTitle}>Ingredients</Text>
-                                <TextInput
-                                    style={styles.modalInput}
-                                    value={formState.inputValues.description}
-                                    onChangeText={textChangeHandler.bind(this, 'ingredients')}
-                                    onFocus={
-                                        touchHandler.bind(this, 'ingredients')
-                                    }
-                                    multiline
-                                    numberOfLines={18}
-                                />
-                            <View style={styles.modalButtonContainer}>
-                                <MyButton style={{margin: '5%'}} title="confirm" onPress={() => {console.log("clicked")}}
-                                />
-                                <MyButton style={{margin: '5%'}} title="cancel" onPress={hideIngredientsModal}/>
-                            </View>
-                        </Modal>
-                    </Portal>
                     <View style={styles.formControl}>
                         <Text style={styles.label}>Ingredients</Text>
-                        <TextInput
+                        <AutoGrowingTextInput
                             style={styles.input}
                             value={formState.inputValues.ingredients}
                             onChangeText={textChangeHandler.bind(this, 'ingredients')}
@@ -355,12 +336,11 @@ function EditRecipeScreen(props) {
                     </View>
                     <View style={styles.formControl}>
                         <Text style={styles.label}>Directions</Text>
-                        <TextInput
+                        <AutoGrowingTextInput
                             style={styles.input}
                             value={formState.inputValues.directions}
                             onChangeText={textChangeHandler.bind(this, 'directions')}
                             onFocus={touchHandler.bind(this, 'directions')}
-                            onContentSizeChange = {scrollView.scrollToEnd({animated:true})}
                         />
                         {!formState.inputValidities.directions && formState.inputTouched.directions && <Text style={styles.warningText}>Please enter valid Directions</Text>}
                     </View>
@@ -403,16 +383,16 @@ function EditRecipeScreen(props) {
                             onFocus={touchHandler.bind(this, 'preparationTime')}
                         />
                         {!formState.inputValidities.preparationTime && formState.inputTouched.preparationTime && <Text style={styles.warningText}>Please enter a valid Preparation Time</Text>}
-                        <View style={styles.formControl}>
-                            <Text style={styles.label}>Cook Time</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={formState.inputValues.cookTime}
-                                onChangeText={textChangeHandler.bind(this, 'cookTime')}
-                                onFocus={touchHandler.bind(this, 'cookTime')}
-                            />
-                            {!formState.inputValidities.cookTime && formState.inputTouched.cookTime && <Text style={styles.warningText}> Please enter a valid Cook Time</Text>}
-                        </View>
+                    </View>
+                    <View style={styles.formControl}>
+                        <Text style={styles.label}>Cook Time</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={formState.inputValues.cookTime}
+                            onChangeText={textChangeHandler.bind(this, 'cookTime')}
+                            onFocus={touchHandler.bind(this, 'cookTime')}
+                        />
+                        {!formState.inputValidities.cookTime && formState.inputTouched.cookTime && <Text style={styles.warningText}> Please enter a valid Cook Time</Text>}
                         <Text style={styles.label}>Rating</Text>
                         <Rating
                         ratingCount={5}
@@ -486,7 +466,6 @@ function EditRecipeScreen(props) {
                 }}
             />
         </View>
-    </Provider>
     );
 }
 
