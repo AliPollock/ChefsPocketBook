@@ -12,6 +12,13 @@ import {Rating} from "react-native-ratings";
 import Colors from "../../constants/Colors";
 import {Ionicons} from "@expo/vector-icons";
 
+/**
+ * A Component which will represent a group object in a Vertical FlatList.
+ * @param {function} props.onSelect    A function which will be called when the Card is touched.
+ * @param {string} props.groupName   The name of the Group.
+ * @returns {JSX.Element}   A card representing a group object.
+ */
+
 function GroupCard(props) {
     let TouchableCmp = TouchableOpacity;
 

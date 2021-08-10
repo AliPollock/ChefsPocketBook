@@ -1,50 +1,48 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
-import {store} from "../App";
-import * as recipeActions from "../store/actions/recipeAction";
+import {store} from "../../App";
+import * as recipeActions from "../../store/actions/recipeAction";
 import {useDispatch, useSelector} from "react-redux";
-import RecipeCard from "../components/RecipeCard";
-import Colors from "../constants/Colors";
-import FooterButton from "../components/FooterButton";
+import RecipeCard from "../../components/Cards/RecipeCard";
+import Colors from "../../constants/Colors";
+import FooterButton from "../../components/Buttons/FooterButton";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import SearchInput from "../components/UIComponents/SearchInput";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import SearchInput from "../../components/Inputs/SearchInput";
 import {alignItems} from "styled-system";
-import searchReducer from "../store/reducers/searchReducer";
 
-
+/**
+ * The user recipes screen which displays all of the user's recipes.
+ * @returns {JSX.Element} A screen which displays a flatlist of all of the user's recipes with search functionality.
+ */
 
 function UserRecipesScreen(props) {
 
-    console.log(JSON.stringify(store.getState()));
     const dispatch = useDispatch();
+
+    //Query database to obtain user recipes and assign results to global state
     dispatch(recipeActions.getUserRecipes())
 
+    //local state for the current screen
     const [searchState, setSearchState] = useState("");
 
+    //useEffect called once upon initial render
     useEffect(() => {
         dispatch(recipeActions.setCurrentRecipes(""));
     }, [])
 
 
-    // console.log("store (currentUserRecipes): " + JSON.stringify(store.getState().recipes.currentUserRecipes))
-
+    //react hook selecting a state slice and storing in the userRecipes variable
     const userRecipes = useSelector(state => state.recipes.currentUserRecipes);
-    // console.log("currentUserRecipes: " + userRecipes);
 
     const searchChangeHandler = (text) => {
         setSearchState(text);
-
         dispatch(recipeActions.setCurrentRecipes(text));
-        // console.log("searchState in handler:" + searchState)
     }
 
 
-    //factor this function out into its own file
+    // The function which is called for every item in the FlatList
     function renderRecipeItem(itemData) {
-
-        //this will be need when it is refactored into its own file
-        // const userRecipes = useSelector(state => state.recipes.userRecipes);
 
         const isUserRecipe = true;
 
@@ -83,7 +81,7 @@ function UserRecipesScreen(props) {
                 rating={itemData.item.rating}
                 description={itemData.item.description}/>
         );
-    };
+    }
 
 
     return (
@@ -110,7 +108,12 @@ function UserRecipesScreen(props) {
             />
         </View>
     );
-};
+}
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 UserRecipesScreen.navigationOptions = navData => {
     return {

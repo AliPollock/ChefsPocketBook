@@ -1,23 +1,34 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
-import RecipeCard from "../components/RecipeCard";
+import RecipeCard from "../../components/Cards/RecipeCard";
 import {useDispatch, useSelector} from "react-redux";
-import Colors from "../constants/Colors";
-import * as recipeActions from "../store/actions/recipeAction";
-import FooterButton from "../components/FooterButton";
-import SearchInput from "../components/UIComponents/SearchInput";
+import Colors from "../../constants/Colors";
+import * as recipeActions from "../../store/actions/recipeAction";
+import FooterButton from "../../components/Buttons/FooterButton";
+import SearchInput from "../../components/Inputs/SearchInput";
+
+/**
+ * The screen which displays all the public recipes.
+ * @returns {JSX.Element} A screen which contains a FlatList to display all public recipes.
+ * @constructor
+ */
 
 function AllRecipesScreen(props) {
 
     const dispatch = useDispatch();
+
+    //Query database to obtain all recipes and assign results to global state
     dispatch(recipeActions.getAllRecipes())
 
+    //local state for the current screen
     const [searchState, setSearchState] = useState("");
 
+    //useEffect called once upon initial render
     useEffect(() =>{
         dispatch(recipeActions.setCurrentRecipes(""));
     },[])
 
+    //react hooks selecting state slice and storing in variables
     const userRecipes = useSelector(state => state.recipes.userRecipes);
     const allRecipes = useSelector(state => state.recipes.currentAllRecipes)
 
@@ -28,7 +39,7 @@ function AllRecipesScreen(props) {
         dispatch(recipeActions.setCurrentRecipes(text));
     }
 
-    //factor this function out into its own file
+    // The function which is called for every item in the FlatList
     function renderRecipeItem(itemData) {
 
         const isUserRecipe = userRecipes.some(recipe => recipe.mainCollectionId === itemData.item.id)
@@ -75,7 +86,7 @@ function AllRecipesScreen(props) {
                 rating={itemData.item.rating}
                 description={itemData.item.description}/>
         );
-    };
+    }
 
 
     return (
@@ -101,7 +112,7 @@ function AllRecipesScreen(props) {
             />
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     screen: {

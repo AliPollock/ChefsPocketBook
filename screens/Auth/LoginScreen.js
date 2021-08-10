@@ -12,18 +12,20 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
-import Colors from '../constants/Colors'
-import Input from "../components/UIComponents/Input";
-import MyButton from "../components/UIComponents/MyButton";
+import Colors from '../../constants/Colors'
+import Input from "../../components/Inputs/Input";
+import MyButton from "../../components/Buttons/MyButton";
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 
 import {useDispatch} from 'react-redux';
-import * as authActions from '../store/actions/authAction';
+import * as authActions from '../../store/actions/authAction';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+/**
+ * Reducer which handles any input into any text input,
+ so all changes are centralised and managed in this state rather than many different states for validities and values
+ */
 
-/*a reducer which handles any input into any text input,
-so all changes are centralised and managed in this state rather than many different states for validities and values*/
 const formReducer = (state, action) => {
     if (action.type === FORM_INPUT_UPDATE) {
         const updatedValues = {
@@ -47,15 +49,25 @@ const formReducer = (state, action) => {
     return state;
 };
 
+/**
+ * The main authentication screen which acts a both a login screen and a signup screen.
+ * @returns {JSX.Element} The login/signup screen which will display different screen depending on the isSignedUp.
+ */
+
 function LoginScreen(props) {
 
+    // const to store useDispatch function
+    const dispatch = useDispatch();
+
+    // local states within login screen
     const [error, setError] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const [isSignedup, setIsSignedup] = useState(false);
-    //Logic to adjust screen if keyboard is present
 
+    //State to adjust screen if keyboard is present
     const [keyBoardIsVisible, setKeyboardIsVisible] = useState(false);
 
+    //useEffect with empty dependencies called only once upon initial render
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
@@ -77,7 +89,6 @@ function LoginScreen(props) {
     }, []);
 
     //auth
-    const dispatch = useDispatch();
 
     /*form state will be changed when there is a change in any input and will call the formReducer upon the change*/
     const [formState, dispatchFormState] = useReducer(formReducer,{
@@ -87,7 +98,7 @@ function LoginScreen(props) {
             password: ''
 
         },
-        /*this object simply stores whether the current text in the form is valid or not corresponding with each field*/
+        /*this object stores whether the current text in the form is valid or not corresponding with each field*/
         inputValidities: {
             email: false,
             password: false
@@ -95,13 +106,16 @@ function LoginScreen(props) {
         formIsValid: false
     });
 
+    //useEffect called upon error state change
     useEffect(() => {
         if(error) {
             Alert.alert("An Error occurred!", error,[{text: 'Okay'}]);
         }
     }, [error]);
 
+    //function calls appropriate action depending on isSignedUp state i.e. the mode the user interface is currently displaying
     const authHandler = async () => {
+        //placeholder variable which will hold appropriate action
         let action;
         if (isSignedup) {
             action =
@@ -119,17 +133,7 @@ function LoginScreen(props) {
         setError(null);
         setIsLoading(true);
         try {
-            //adding user to authenticated users
             await dispatch(action);
-            //Adding user to real time database
-            // if (isSignedup) {
-            //     await dispatch(
-            //         authActions.addUserToDatabase(
-            //             formState.inputValues.email,
-            //             formState.inputValues.password
-            //         )
-            //     )
-            // }
             props.navigation.navigate('App')
         } catch(err) {
             setError(err.message);

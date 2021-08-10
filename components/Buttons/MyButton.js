@@ -1,11 +1,18 @@
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React from 'react';
+import {View, Button, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import Colors from "../../constants/Colors";
-import React, {useState} from "react";
-import {borderWidth} from "styled-system";
+import Input from "../Inputs/Input";
+import {alignItems} from "styled-system";
 
-function MyTabButton(props) {
+/**
+ * A component which contains styling information for a Button.
+ * @param {function} props.onPress     A function which is activated when the button is pressed.
+ * @param {String} props.title       The title of the button.
+ * @param {Object} props.style       An object which contains styling data.
+ * @returns {JSX.Element}   A Styled button to be used throughout the application.
+ */
 
-    const [isSelected, setIsSelected] = useState(false);
+function MyButton(props) {
 
     return(
         <TouchableOpacity
@@ -22,7 +29,7 @@ function MyTabButton(props) {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        borderRadius: 5,
+        borderRadius: 10,
         overflow: 'hidden',
         marginVertical:10,
         shadowColor: 'black',
@@ -30,8 +37,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width:0, height: 2},
         shadowRadius: 10,
         backgroundColor: Colors.primaryColor,
-        height: 40,
-        borderWidth: 1
+        height: 40
     },
     button: {
         padding: 7,
@@ -44,4 +50,5 @@ const styles = StyleSheet.create({
     }
 });
 
-export default MyTabButton;
+export default MyButton;
+

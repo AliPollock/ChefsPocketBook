@@ -43,7 +43,10 @@ const fetchFonts = () => {
   });
 };
 
-//reducer which will hold the state of the app
+/**
+ * The Reducer which will hold the state of the app in three main slices.
+ */
+
 const rootReducer = combineReducers({
   recipes: recipeReducer,
   authenticate: authReducer,
@@ -53,14 +56,18 @@ const rootReducer = combineReducers({
 //redux store initialisation
 export const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
-//main app component
+/**
+ * The main app component.
+ * @returns {JSX.Element} A redux wrapper which contains the top level Navigator.
+ */
+
 export default function App() {
 
-  // disabling expo warnings
-  // console.LogBox = true;
+  // disabling expo warnings because of compatibility issues
   LogBox.ignoreLogs(['Setting a timer']);
 
 
+  //async font loading
   const [fontLoaded, setFontLoaded] = useState(false);
   if (!fontLoaded) {
     return (
@@ -81,15 +88,6 @@ export default function App() {
 };
 
 
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 18,
-    paddingVertical: 20,
-    paddingHorizontal: 12,
-    textAlign: 'center'
-  }
-
-});
 
 
 

@@ -16,12 +16,35 @@ export const SET_CURRENT_RECIPES = "SET_CURRENT_RECIPES";
 //action creator functions
 
 
-//action which is used when the callback function requires and action with field 'type' but I don't want to carry out an action
+
+/**
+ * Action which is used when the callback function requires and action with field 'type' but I don't want to carry out any action.
+ * @returns {{type: string}}
+ */
 export function doNothing(){
     return {type: DO_NOTHING};
 }
 
-// action which takes the fields and updates an existing recipe
+/**
+ * Action which takes the fields and updates an existing recipe
+ * @param {String} recipeId The id of the recipe.
+ * @param {String} mainCollectionId The main collection id of the recipe.
+ * @param {String} title The title of the recipe.
+ * @param {String} description The description of the recipe.
+ * @param {String} ingredients The ingredients of the recipe.
+ * @param {String} directions The directions of the recipe.
+ * @param {String} categories The categories of the recipe.
+ * @param {String} servings The servings of the recipe.
+ * @param {String} notes The notes of the recipe.
+ * @param {String} preparationTime The preparation of the recipe.
+ * @param {String} cookTime The cook time of the recipe.
+ * @param {String} rating The rating of the recipe.
+ * @param {String} isVegan The boolean of if the recipe is vegan.
+ * @param {String} isVegetarian The boolean of if the recipe is vegetarian.
+ * @param {String} isGlutenFree The boolean of if the recipe is gluten free.
+ * @param {String} isDairyFree The boolean of if the recipe is dairy free.
+ * @param {String} isPublic The boolean of if the recipe is public.
+ */
 export const updateRecipe = (
     recipeId,
     mainCollectionId,
@@ -93,7 +116,25 @@ export const updateRecipe = (
 
 }
 
-//action which adds a new recipe to the main recipe collection and triggers the add_to_user_collection action
+
+/**
+ * Action which adds a new recipe to the main recipe collection and triggers the add_to_user_collection action
+ * @param {String} title The title of the recipe.
+ * @param {String} description The description of the recipe.
+ * @param {String} ingredients The ingredients of the recipe.
+ * @param {String} directions The directions of the recipe.
+ * @param {String} categories The categories of the recipe.
+ * @param {String} servings The servings of the recipe.
+ * @param {String} notes The notes of the recipe.
+ * @param {String} preparationTime The preparation of the recipe.
+ * @param {String} cookTime The cook time of the recipe.
+ * @param {String} rating The rating of the recipe.
+ * @param {String} isVegan The boolean of if the recipe is vegan.
+ * @param {String} isVegetarian The boolean of if the recipe is vegetarian.
+ * @param {String} isGlutenFree The boolean of if the recipe is gluten free.
+ * @param {String} isDairyFree The boolean of if the recipe is dairy free.
+ * @param {String} isPublic The boolean of if the recipe is public.
+ */
 export const createRecipe = (
     title,
     description,
@@ -195,7 +236,10 @@ export const createRecipe = (
     };
 };
 
-//action which retrieves all recipes associated with the user
+
+/**
+ * Action which retrieves all recipes associated with the user
+ */
 export const getUserRecipes = () => {
     // console.log("running getUserRecipes action");
     return async (dispatch, getState) => {
@@ -250,7 +294,10 @@ export const getUserRecipes = () => {
 };
 
 
-//action which retrieves all the recipes in the main collection
+
+/**
+ * Action which retrieves all the recipes in the main collection
+ */
 export const getAllRecipes = () => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
@@ -304,6 +351,11 @@ export const getAllRecipes = () => {
 };
 
 
+/**
+ * Action which deletes a recipe from a user's collection.
+ * @param {String} recipeId The id of the recipe.
+ */
+
 export const deleteUserRecipe = recipeId => {
     console.log("userId: " + recipeId);
     return async (dispatch, getState) => {
@@ -327,7 +379,26 @@ export const deleteUserRecipe = recipeId => {
 
 }
 
-//action which adds a recipe to the user's collection
+
+/**
+ * Action which adds a recipe to the user's collection.
+ * @param {String} mainCollectionId The main collection id of the recipe.
+ * @param {String} title The title of the recipe.
+ * @param {String} description The description of the recipe.
+ * @param {String} ingredients The ingredients of the recipe.
+ * @param {String} directions The directions of the recipe.
+ * @param {String} categories The categories of the recipe.
+ * @param {String} servings The servings of the recipe.
+ * @param {String} notes The notes of the recipe.
+ * @param {String} preparationTime The preparation of the recipe.
+ * @param {String} cookTime The cook time of the recipe.
+ * @param {String} rating The rating of the recipe.
+ * @param {String} isVegan The boolean of if the recipe is vegan.
+ * @param {String} isVegetarian The boolean of if the recipe is vegetarian.
+ * @param {String} isGlutenFree The boolean of if the recipe is gluten free.
+ * @param {String} isDairyFree The boolean of if the recipe is dairy free.
+ * @param {String} isPublic The boolean of if the recipe is public.
+ */
 export const addRecipeToCollection = (
     mainCollectionId,
     title,
@@ -414,11 +485,18 @@ export const addRecipeToCollection = (
     };
 }
 
-//action which removes a recipe from a user's collection
+/**
+ * //action which removes a recipe from a user's collection
+ * @param {String} id The id of the recipe.
+ */
 export const removeRecipeFromCollection = id => {
     return {type: REMOVE_RECIPE_FROM_COLLECTION, recipeId: id };
 }
 
+/**
+ * Action which sets the current Recipes.
+ * @param {String} searchTerm The search term currently being search for.
+ */
 export const setCurrentRecipes = (searchTerm) => {
     let searchTermLowerCase = searchTerm.toString().toLowerCase();
     return {type: SET_CURRENT_RECIPES, searchTerm: searchTermLowerCase}

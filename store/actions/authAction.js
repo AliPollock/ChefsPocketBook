@@ -14,8 +14,20 @@ export const ADD_EMAIL_TO_DATABASE = 'ADD_EMAIL_TO_DATABASE';
 export const ADD_EMAIL_TO_MAIN_COLLECTION = 'ADD_EMAIL_TO_MAIN_COLLECTION';
 
 let timer;
+/**
+ * File which contains all of the actions associated with authentication.
+ */
 
-//function used to authenticate user login/signup
+
+/**
+ * Action used to authenticate user login/signup
+ * @param {String} userId The id of the current user.
+ * @param {String} token The authentication token of the current user.
+ * @param {String} email The email of the current user.
+ * @param {String} expirationTime The expiration time of the current session.
+ * @returns {function} A dispatch function which will dispatch an action to make a global state change and will set and will also set a logout timer.
+ */
+
 export const authenticate = (userId, token, email, expirationTime) => {
     return dispatch => {
         dispatch(setLogoutTimer(expirationTime));
@@ -23,7 +35,13 @@ export const authenticate = (userId, token, email, expirationTime) => {
     };
 };
 
-//action which will add user to firebase authentication and create a unique which will be added to the current state of the app along with a secure token
+/**
+ * Action which will add user to firebase authentication and create a unique which will be added to the current state of the app along with a secure token.
+ * It will also dispatch an action to update the global state of the app.
+ * @param {String} email The email of the current user.
+ * @param {String} password The password of the current user.
+ */
+
 export const signup = (email, password) => {
     return async dispatch => {
         const response = await fetch(
@@ -62,7 +80,12 @@ export const signup = (email, password) => {
     };
 };
 
-//action which will check if user is listed as an authenticated user and add the user id to the current state of the app along with a secure token
+/**
+ * Action which will check if user is listed as an authenticated user and add the user id to the current state of the app along with a secure token
+ * @param {String} email The email of the current user.
+ * @param {String} password The password of the current user.
+ */
+
 export const login = (email, password) => {
     return async dispatch => {
         const response = await fetch(
@@ -100,21 +123,31 @@ export const login = (email, password) => {
     };
 };
 
-//function to log user out, deleted async storage data and navigating back to auth Login Screen
+/**
+ * Action to log user out, deleted async storage data and navigating back to auth Login Screen
+ */
+
 export const logout = () => {
     clearLogoutTimer()
     AsyncStorage.removeItem('userData');
     return {type: LOGOUT};
 };
 
-//function to clear the timer so that it is ready to be set on next login
+
+/**
+ * Action to clear the timer so that it is ready to be set on next login
+ */
 const clearLogoutTimer = () => {
     if (timer){
         clearTimeout(timer);
     }
 }
 
-//function to set logout timer when firebase token expires
+
+/**
+ * Action to set logout timer when firebase token expires
+ * @param {String} expirationTime The expiration time for the current session
+ */
 const setLogoutTimer = expirationTime => {
     return dispatch => {
         timer = setTimeout(() => {
@@ -123,14 +156,16 @@ const setLogoutTimer = expirationTime => {
     };
 };
 
-//function to save data to device memory so that token persists between sessions and can be ultimately be called on by redux at the start of each new session
+/**
+ * Action to save data to device memory so that token persists between sessions and can be ultimately be called on by redux at the start of each new session
+ * @param {String} token The authentication token of the current user.
+ * @param {String} userId The id of the current user.
+ * @param {String} email The email of the current user.
+ * @param {String} expirationDate The expiration date of the current session.
+ */
+
+
 const saveDataToStorage = (token, userId, email, expirationDate) => {
-    // console.log('data being saved: ' +  JSON.stringify({
-    //     token: token,
-    //     userId: userId,
-    //     expirationDate: expirationDate.toISOString()
-    // })
-    // );
     AsyncStorage.setItem('userData', JSON.stringify({
         token: token,
         userId: userId,
@@ -140,6 +175,10 @@ const saveDataToStorage = (token, userId, email, expirationDate) => {
     );
 }
 
+
+/**
+ * Action to retrieve all of the emails currently in the database.
+ */
 export const getAllEmails = () => {
 
     return async (dispatch, getState) => {
@@ -172,6 +211,12 @@ export const getAllEmails = () => {
         }
     };
 }
+
+
+/**
+ * Action to add a given email address to the database.
+ * @param {String} email The email of the current user.
+ */
 
 export const addEmailToDatabase = (email) => {
     return async (dispatch, getState) => {
@@ -207,6 +252,12 @@ export const addEmailToDatabase = (email) => {
 
     };
 }
+
+
+/**
+ * Action to add a given email address to the current user's collection in the database
+ * @param {String} email The email of the current user.
+ */
 
 export const addEmailToMainCollection = (email) => {
     return async (dispatch, getState) => {

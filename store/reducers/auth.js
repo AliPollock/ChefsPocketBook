@@ -8,6 +8,10 @@ import {
     ADD_EMAIL_TO_DATABASE, ADD_EMAIL_TO_MAIN_COLLECTION
 } from '../actions/authAction'
 
+/**
+ * Constant used to state the initial state of the state slice.
+ */
+
 const initialState = {
     token: null,
     userId: null,
@@ -15,18 +19,14 @@ const initialState = {
     allEmail: null
 };
 
+/**
+ * Reducer function which receives action object and executes state updates based on the type attribute of the action.
+ * @param {Object} state The current state slice.
+ * @param {Object} action The action to be performed with an optional payload.
+ */
+
 export default (state = initialState, action ) => {
     switch (action.type) {
-        // case LOGIN:
-        //     return {
-        //         token: action.token,
-        //         userId: action.userId
-        //     };
-        // case SIGNUP:
-        //     return {
-        //         token: action.token,
-        //         userId: action.userId
-        //     };
         case AUTHENTICATE:
             return {...state,
                 token: action.token,

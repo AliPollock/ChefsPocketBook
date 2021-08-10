@@ -11,14 +11,14 @@ import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 
 //Screen imports
-import EditRecipeScreen from '../screens/EditRecipeScreen';
+import EditRecipeScreen from '../screens/Recipes/EditRecipeScreen';
 import ExploreByCategoryScreen from '../screens/ExploreByCategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
-import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../screens/Auth/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import UserRecipesScreen from '../screens/UserRecipesScreen';
-import AllRecipesScreen from '../screens/AllRecipesScreen';
-import LandingScreen from '../screens/LandingScreen';
+import UserRecipesScreen from '../screens/Recipes/UserRecipesScreen';
+import AllRecipesScreen from '../screens/Recipes/AllRecipesScreen';
+import LandingScreen from '../screens/Auth/LandingScreen';
 
 //Other imports
 import {Platform, SafeAreaView, Button, View} from 'react-native';
@@ -26,15 +26,23 @@ import Colors from '../constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
 import {useDispatch} from 'react-redux';
 import * as authActions from '../store/actions/authAction';
-import RecipeScreen from "../screens/RecipeScreen";
+import RecipeScreen from "../screens/Recipes/RecipeScreen";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import AllGroupsScreen from "../screens/AllGroupsScreen";
-import GroupScreen from "../screens/GroupScreen";
-import CreateGroupScreen from "../screens/CreateGroupScreen";
-import GroupRecipesScreen from "../screens/GroupRecipes";
-import GroupMembers from "../screens/GroupMembers";
-import GroupMembersScreen from "../screens/GroupMembers";
+import HeaderButtonLarge from "../components/Buttons/HeaderButtonLarge";
+import AllGroupsScreen from "../screens/Groups/AllGroupsScreen";
+import GroupScreen from "../screens/Groups/GroupScreen";
+import CreateGroupScreen from "../screens/Groups/CreateGroupScreen";
+import GroupRecipesScreen from "../screens/Groups/GroupRecipes";
+import GroupMembers from "../screens/Groups/GroupMembers";
+import GroupMembersScreen from "../screens/Groups/GroupMembers";
+
+/**
+ * This file contains all of the navigators for the app which are nested within each other.
+ */
+
+/**
+ * A set of default options for other navigators to use.
+ */
 
 //default options
 const defaultStackNavOptions = {
@@ -50,6 +58,10 @@ const defaultStackNavOptions = {
     headerTintColor: Platform.OS === 'android' ? 'white': Colors.primaryColor,
     backgroundColor: Colors.accentColor
 };
+
+/**
+ * A navigator used in the search screen which contains UserRecipeScreen and AllRecipesScreen.
+ */
 
 const SearchNavigator = createMaterialTopTabNavigator({
         MyRecipes: {
@@ -75,6 +87,10 @@ const SearchNavigator = createMaterialTopTabNavigator({
         }
     }
 );
+
+/**
+ * A navigator which controls navigation in the main recipe part of the app.
+ */
 
 //main stack for navigation through the app
 const RecipeNavigator = createStackNavigator({
@@ -111,6 +127,10 @@ const RecipeNavigator = createStackNavigator({
     defaultNavigationOptions:defaultStackNavOptions
 })
 
+/**
+ * A navigator which controls navigation within the profile section of the app.
+ */
+
 const ProfileNavigator = createStackNavigator({
     Profile: {
         screen: ProfileScreen,
@@ -126,6 +146,10 @@ const AuthNavigator = createStackNavigator({
 },{
         defaultNavigationOptions:defaultStackNavOptions
 })
+
+/**
+ * A navigator which controls navigation in the group section of the app.
+ */
 
 const GroupNavigator = createStackNavigator({
     AllGroups: {
@@ -149,6 +173,9 @@ const GroupNavigator = createStackNavigator({
     defaultNavigationOptions:defaultStackNavOptions}
 )
 
+/**
+ * The app navigator which controls the side drawer and acts as the highest level navigator within the main section of the app.
+ */
 
 
 //side drawer navigator
@@ -176,6 +203,10 @@ const DrawerNavigator = createDrawerNavigator({
         }
     }
 )
+
+/**
+ * The top most level navigator in the app which controls navigation between the auth section and main app section.
+ */
 const MainNavigator = createSwitchNavigator(
     {
         Startup: LandingScreen,

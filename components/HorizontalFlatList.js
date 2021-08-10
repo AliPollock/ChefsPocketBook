@@ -3,6 +3,12 @@ import Colors from "../constants/Colors";
 import {FlatList, View, StyleSheet} from "react-native";
 import React from "react";
 
+/**
+ * A Customised Flatlist component used to display items horizontally.
+ * @param {Array} props.data The Array containing the objects which each FlatList item will represent.
+ * @param {function} props.renderItem The function which determines what will be rendered as each item in the FlatList.
+ * @returns {JSX.Element} A Horizontal FlatList with styling.
+ */
 
 function HorizontalFlatList(props) {
 

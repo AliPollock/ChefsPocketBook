@@ -2,25 +2,31 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, ScrollView} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import {useDispatch, useSelector} from "react-redux";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import HeaderButtonSmall from "../components/HeaderButtonSmall";
-import {addRecipeToCollection, doNothing} from "../store/actions/recipeAction";
-import Colors from "../constants/Colors";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import HeaderButtonSmall from "../../components/Buttons/HeaderButtonSmall";
+import {addRecipeToCollection, doNothing} from "../../store/actions/recipeAction";
+import Colors from "../../constants/Colors";
 import {Rating} from "react-native-ratings";
-import MyButton from "../components/UIComponents/MyButton";
-import MyTabButton from "../components/UIComponents/MyTabButton";
-import * as groupActions from "../store/actions/groupAction";
+import MyButton from "../../components/Buttons/MyButton";
+import MyTabButton from "../../components/Buttons/MyTabButton";
+import * as groupActions from "../../store/actions/groupAction";
 import {Ionicons} from "@expo/vector-icons";
-import * as recipeActions from "../store/actions/recipeAction";
+import * as recipeActions from "../../store/actions/recipeAction";
 import {Modal, Portal, Provider} from 'react-native-paper';
 import {Picker} from "@react-native-picker/picker";
-import ScaleIngredientsModal from "../components/ScaleIngredientsModal";
+import ScaleIngredientsModal from "../../components/ScaleIngredientsModal";
 
+
+/**
+ * The recipe screen which displays recipe information for a given recipe.
+ * @param {object} props.navigation An object which contains navigation data passed from the previous screen.
+ * @returns {JSX.Element} A screen which displays recipe information and provides routes to change the display, edit and delete the recipe.
+ */
 function RecipeScreen(props) {
-    //const that keeps charge of if the recipe is a user recipe
-    const [isUserRecipe, setIsUserRecipe] = useState(props.navigation.getParam('isUserRecipe'))
     const dispatch = useDispatch();
 
+    //local state
+    const [isUserRecipe, setIsUserRecipe] = useState(props.navigation.getParam('isUserRecipe'))
     const[currentViewTab, setCurrentViewTab] = useState("ingredients");
 
     //modal state management
@@ -28,7 +34,7 @@ function RecipeScreen(props) {
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
 
-    // function which handles a change in the toggleIsUser button
+    // A function which handles a change in the toggleIsUser button
     const toggleIsUserRecipe = useCallback(() => {
         console.log("checkingId")
         if (isUserRecipe) {
@@ -61,8 +67,8 @@ function RecipeScreen(props) {
             ));
             // console.log(props.navigation.getParam('mainCollectionId'))
 
-            /**in order to be able to update, need to have access to recipe in user collection
-             * therefore if the UserRecipes state slice is refreshed here, we can access the new entry in the edit screen**/
+            /***in order to be able to update, need to have access to recipe in user collection
+             * therefore if the UserRecipes state slice is refreshed here, we can access the new entry in the edit screen***/
 
             dispatch(recipeActions.getUserRecipes());
 
@@ -101,8 +107,8 @@ function RecipeScreen(props) {
 
     const recipeTitle = props.navigation.getParam('title')
 
-    //Ingredient scaling
 
+    //Ingredient scaling
 
     //modal state management
     const [scaleModalVisible, setScaleModalVisible] = useState(false);
@@ -113,12 +119,12 @@ function RecipeScreen(props) {
     const [showDropDown, setShowDropDown] = useState(false);
 
     const [scale, setScale] = useState(1)
+    const [scaleHolder, setScaleHolder] = useState("1")
     const [unit, setUnit] = useState("Metric")
     const [ingredients, setIngredients] = useState(props.navigation.getParam('ingredients') + "\n\n\n")
 
 
-
-
+    //function which will change the ingredients string based on the measurement units currently chosen
     const getIngredients = () => {
         let rawIngredients = props.navigation.getParam('ingredients')
         console.log("starting regex >>>>>>>>>>>>>>>>>>>>>>>>")
@@ -233,7 +239,17 @@ function RecipeScreen(props) {
             }
 
         }
+        console.log("before scale: " + rawIngredients)
 
+        const scaleRegex = /[0-9]+\.*[0-9]*/g
+        let scaleResult;
+
+        while(scaleResult = scaleRegex.exec(rawIngredients)) {
+            rawIngredients = rawIngredients.slice(0,scaleResult.index) + Math.round((scaleResult[0]*scale)*100)/100 + rawIngredients.slice(scaleResult.index +scaleResult[0].length,rawIngredients.length)
+            console.log("in while loop")
+        }
+
+        console.log("after scale of: " + scale + " of type: " + typeof(scale))
         setIngredients(rawIngredients + "\n\n")
     }
 
@@ -284,16 +300,21 @@ function RecipeScreen(props) {
             </ScrollView>
             <Portal>
                 <ScaleIngredientsModal
-                    scale={scale}
+                    scale={scaleHolder}
                     unit={unit}
                     visible={scaleModalVisible}
                     onDismiss={hideScaleModal}
                     onConfirm={() => {
-                        console.log("scale: " + scale + ", unit: " + unit);
+                        if(scaleHolder) {
+                            console.log("scaleHolder: " + scaleHolder)
+                            setScale(parseInt(scaleHolder))
+                            console.log("scale: " + scale)
+                        }
                         hideScaleModal()
                         getIngredients()
                     }}
                     onChangeText={(text) => {
+                        setScaleHolder(text)
                         setScale(parseInt(text))
                     }}
                     onValueChange={(itemValue) => {
@@ -488,6 +509,11 @@ const styles = StyleSheet.create({
         color: 'white',
     }
 });
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 RecipeScreen.navigationOptions = (navigationData) => {
     const title = navigationData.navigation.getParam('title');

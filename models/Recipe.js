@@ -1,3 +1,7 @@
+/**
+ * A class component which represents a Recipe and assigns values to fields.
+ */
+
 class Recipe {
     constructor(
         id,

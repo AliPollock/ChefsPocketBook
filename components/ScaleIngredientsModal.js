@@ -1,10 +1,28 @@
-import {StyleSheet, Text, TextInput, View} from "react-native";
+import {StyleSheet, Text, TextInput, View, ScrollView, TouchableWithoutFeedback, Keyboard, Platform, KeyboardAvoidingView} from "react-native";
 import {Picker} from "@react-native-picker/picker";
 import Colors from "../constants/Colors";
-import MyButton from "./UIComponents/MyButton";
+import MyButton from "./Buttons/MyButton";
 import {Modal} from "react-native-paper";
 import React, {useState} from "react";
 
+
+const DismissKeyboard = ({children}) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+)
+
+/**
+ * A component which will display the modal in the recipe screen.
+ * @param {boolean} props.visible A boolean which controls whether the modal is visible.
+ * @param {function} props.onDismiss A function which determines the action carried out when the modal is dismissed.
+ * @param {String} props.unit A String which determines which unit scale is currently in use.
+ * @param {String} props.scale A String which determines the multiplier which will be applied to the quantities.
+ * @param {function} props.onChangeText A function which determines the action carried out when the text changes in the text input.
+ * @param {function} props.onValueChange A function which determines the action carried out when the picker value is changes.
+ * @param {function} props.onConfirm A function which determines the action carried out when the confirm button is pressed.
+ * @returns {JSX.Element} A modal used to change the measurements and scale recipe quantities.
+ */
 
 function ScaleIngredientsModal(props) {
 
@@ -12,7 +30,10 @@ function ScaleIngredientsModal(props) {
     const scale = props.scale
 
     return (
+        <DismissKeyboard style={styles.touchableWithoutFeedback}>
         <Modal visible={props.visible} onDismiss={props.onDismiss} contentContainerStyle={styles.containerStyle}>
+
+            <ScrollView>
             <Text style={{color: 'white'}}>Scale Ingredients?</Text>
             <View style={styles.modalForm}>
                 <Text style={styles.label}>Scale</Text>
@@ -24,6 +45,7 @@ function ScaleIngredientsModal(props) {
                 />
                 <Text style={styles.label}>Units</Text>
                 <Picker
+                    itemStyle={{color:'white'}}
                     color={Colors.accentColor}
                     dropdownIconColor='white'
                     style={styles.picker}
@@ -37,11 +59,18 @@ function ScaleIngredientsModal(props) {
                 <MyButton style={{margin: '5%'}} title="confirm" onPress={props.onConfirm}/>
                 <MyButton style={{margin: '5%'}} title="cancel" onPress={props.onDismiss}/>
             </View>
+            </ScrollView>
+
         </Modal>
+        </DismissKeyboard>
     );
 }
 
 const styles = StyleSheet.create({
+    touchableWithoutFeedback: {
+        flex:1,
+        alignItems: 'center'
+    },
     containerStyle: {
         backgroundColor: Colors.accentColor,
         padding: 20,
@@ -49,6 +78,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         alignItems: 'center',
         borderRadius: 15,
+        maxHeight: '60%'
     },
     modalButtonContainer: {
         flexDirection: 'row',
@@ -69,7 +99,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     modalForm: {
-        width: '50%',
+        width: '100%',
     },
     input: {
         paddingHorizontal: 2,

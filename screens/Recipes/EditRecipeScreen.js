@@ -1,17 +1,17 @@
 import React, {useCallback, useEffect, useReducer, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Alert, TextInput, Switch, SafeAreaView} from 'react-native';
-import * as recipeActions from "../store/actions/recipeAction";
+import * as recipeActions from "../../store/actions/recipeAction";
 import {useSelector, useDispatch} from 'react-redux';
-import {store} from "../App";
-import Colors from "../constants/Colors";
+import {store} from "../../App";
+import Colors from "../../constants/Colors";
 import {Ionicons} from '@expo/vector-icons';
 import {Rating} from 'react-native-ratings';
 import {Modal, Portal, Provider} from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import FooterButton from "../components/FooterButton";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import MyButton from "../components/UIComponents/MyButton";
+import FooterButton from "../../components/Buttons/FooterButton";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import MyButton from "../../components/Buttons/MyButton";
 import {fontSize, justifyContent, marginBottom} from "styled-system";
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 
@@ -23,8 +23,10 @@ const SWITCH = 'SWITCH';
 const RATING = 'RATING';
 
 
-/*a reducer which handles any input into any text input, so all changes are centralised
-and managed in this state rather than many different states for validities and values*/
+/**
+ * A reducer which handles any input into any text input, so all changes are centralised
+ and managed in this state rather than many different states for validities and values.
+ */
 
 
 const formReducer = (state, action) => {
@@ -85,7 +87,15 @@ const formReducer = (state, action) => {
     return state;
 };
 
+/**
+ * The edit recipes screen.
+ * @param {object} props.navigation An object which contains navigation data passed from the previous screen.
+ * @returns {JSX.Element} A screen which holds a form allowing the user to edit the current recipe.
+ */
+
 function EditRecipeScreen(props) {
+
+    const dispatch = useDispatch();
 
     //get the current id of recipe from navigation params (if it doesn't exist, it will be null
     let recipeId = props.navigation.getParam('recipeId')
@@ -102,16 +112,12 @@ function EditRecipeScreen(props) {
     const hideIngredientsModal = () => setIngredientsModalVisible(false);
 
 
-    // console.log("selectedRecipe: " + JSON.stringify(selectedRecipe))
-
-
     //state to keep track of ratings
     const [currentRating, setCurrentRating] = useState(0);
     const [showServingsDropDown, setServingsDropDown] = useState(false);
 
-    const dispatch = useDispatch();
 
-    /*this function is fired every time a change happens in the form and gives the specific field as an argument to this function
+    /*This function is fired every time a change happens in the form and gives the specific field as an argument to this function
     * along with the current text as another argument*/
     const textChangeHandler = (inputIdentifier, text) => {
         let isValid = false;
@@ -150,9 +156,10 @@ function EditRecipeScreen(props) {
     }, [submitHandler]);
 
 
-    /*form state will change with any change in any input and will call the formReducer upon the change*/
-    /*using array destructuring here to save the below into the formState variable and the dispatchFormState is a function which will act upon it*/
-    /*this is exactly the same as a normal react hook, but instead of managing one state it employs the reducer to manage many at once*/
+    /***form state will change with any change in any input and will call the formReducer upon the change
+     * Using array destructuring here to save the below into the formState variable and the dispatchFormState is a function which will act upon it
+     * This is exactly the same as a normal react hook, but instead of managing one state it employs the reducer to manage many at once
+     * ***/
     const [formState, dispatchFormState] = useReducer(formReducer, {
         /*this object stores the current text in the form corresponding with each field*/
         inputValues: {
@@ -173,17 +180,17 @@ function EditRecipeScreen(props) {
             isPublic: selectedRecipe ? selectedRecipe.isPublic : true
 
         },
-        /*this object stores whether the current text in the form is valid or not corresponding with each field*/
+        //this object stores whether the current text in the form is valid or not corresponding with each field
         inputValidities: {
-            title: selectedRecipe ? true: false,
-            description: selectedRecipe ? true: false,
-            ingredients: selectedRecipe ? true: false,
-            directions: selectedRecipe ? true: false,
-            categories: selectedRecipe ? true: false,
-            servings: selectedRecipe ? true: false,
-            notes: selectedRecipe ? true: false,
-            preparationTime: selectedRecipe ? true: false,
-            cookTime: selectedRecipe ? true: false,
+            title: !!selectedRecipe,
+            description: !!selectedRecipe,
+            ingredients: !!selectedRecipe,
+            directions: !!selectedRecipe,
+            categories: !!selectedRecipe,
+            servings: !!selectedRecipe,
+            notes: !!selectedRecipe,
+            preparationTime: !!selectedRecipe,
+            cookTime: !!selectedRecipe,
             rating: true,
             isVegan: true,
             isVegetarian: true,
@@ -208,7 +215,7 @@ function EditRecipeScreen(props) {
             isDairyFree: false,
             isPublic: false
         },
-        formIsValid: selectedRecipe ? true: false
+        formIsValid: !!selectedRecipe
     });
 
     //this function is called when the form is submitted
@@ -219,7 +226,7 @@ function EditRecipeScreen(props) {
             ])
             return;
         }
-        /*if recipe exists*/
+        //The recipe exists
         if (selectedRecipe) {
             dispatch(
                 recipeActions.updateRecipe(
@@ -243,7 +250,7 @@ function EditRecipeScreen(props) {
                 )
             );
         } else {
-            /*recipe doesn't exist, so create a new one*/
+            //The recipe doesn't exist, so create a new one
             dispatch(
                 recipeActions.createRecipe(
                     formState.inputValues.title,
@@ -468,6 +475,11 @@ function EditRecipeScreen(props) {
         </View>
     );
 }
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 EditRecipeScreen.navigationOptions = navData => {
     return {

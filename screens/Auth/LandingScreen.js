@@ -1,15 +1,21 @@
 import {Button, StyleSheet, Text, View, ActivityIndicator} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 import React, {useEffect} from "react";
 import {useDispatch} from 'react-redux';
-import * as authActions from '../store/actions/authAction'
-import * as recipeActions from "../store/actions/recipeAction";
-import * as groupActions from "../store/actions/groupAction";
+import * as authActions from '../../store/actions/authAction'
+import * as recipeActions from "../../store/actions/recipeAction";
+import * as groupActions from "../../store/actions/groupAction";
+
+/**
+ * The Screen component which is first rendered upon start up and redirects the user to the main app section if they are logged in already, other wise redirects to the auth screen.
+ * @returns {JSX.Element} A spinner indicating loading while the async functions are running.
+ */
 
 function LandingScreen(props) {
     const dispatch = useDispatch();
-    //function which will check if there is login data currently stored on the device
+
+    //function which will check if there is login data currently stored on the device by accessing async storage
     useEffect(() => {
         const tryLogin = async () => {
             const userData = await AsyncStorage.getItem('userData');

@@ -1,14 +1,15 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
 
+/**
+ * Screen which will be used to explore recipes by category.
+ */
+
 function ExploreByCategoryScreen(props) {
-    function goHome() {
-        console.log("Go Home")
-    }
+
     return (
         <View>
             <Text>Welcome to the ExploreByCategory Screen</Text>
-            <Button title={"Home"} onPress={goHome()}></Button>
         </View>
     );
 }

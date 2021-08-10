@@ -1,3 +1,7 @@
+/**
+ * A class component which represents a Group and assigns values to fields.
+ */
+
 class Group {
     constructor(
         id,

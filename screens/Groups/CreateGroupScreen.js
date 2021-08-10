@@ -1,14 +1,21 @@
 import React, {useCallback, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, Alert, TextInput} from 'react-native';
-import Input from "../components/UIComponents/Input";
-import Colors from "../constants/Colors";
-import MyButton from "../components/UIComponents/MyButton";
+import Input from "../../components/Inputs/Input";
+import Colors from "../../constants/Colors";
+import MyButton from "../../components/Buttons/MyButton";
 import {useDispatch} from "react-redux";
-import * as groupActions from "../store/actions/groupAction";
+import * as groupActions from "../../store/actions/groupAction";
+
+/**
+ * The Screen which displays options to create a new group.
+ * @returns {JSX.Element} A View containing a text input and buttons to create a new group.
+ */
 
 function CreateGroupScreen(props) {
 
     const dispatch = useDispatch();
+
+    //local state for create group screen
     const [input, setInput] = useState("");
     const [inputIsValid, setInputIsValid] = useState(false);
 
@@ -21,6 +28,7 @@ function CreateGroupScreen(props) {
         }
     };
 
+    // function which handles a create action event
     const createHandler = useCallback( () => {
         dispatch(groupActions.createGroup(input, "", ""))
         props.navigation.goBack();

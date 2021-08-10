@@ -6,6 +6,12 @@ const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR = 'INPUT_BLUR';
 const INPUT_FOCUSED = 'INPUT_FOCUSED';
 
+/**
+ * A Reducer component which generalises and sorts actions to determine the state change the action will make.
+ * @param {String} state The state that the action will make a change to.
+ * @param {Object} action The action which contains a type value and determines what data should be added to the state.
+ */
+
 const inputReducer = (state, action) => {
     switch (action.type) {
         case INPUT_CHANGE:
@@ -29,6 +35,21 @@ const inputReducer = (state, action) => {
             return state;
     }
 };
+
+/**
+ * A custom input component which contains styling and adds functionality on top of the React-native library Text Input.
+ * @param {String} props.initialValue The initial value of the Text Input.
+ * @param {function} props.onInputChange The function which is called when the value of the Input changes.
+ * @param {String} props.id The unique id which is used to identify the Instance of the Text Input.
+ * @param {Boolean} props.required A Boolean which determines if the Input is required.
+ * @param props.email An empty prop which acts a boolean to determine whether the text input is an email type input.
+ * @param {int} props.min A minimum numerical value for the Input.
+ * @param {int} props.max A maximum numerical value for the Input.
+ * @param {int} props.minLength The minimum Length that is required to be entered into the input.
+ * @param {String} props.label The label text for the Input.
+ * @param {String} props.errorText The message to be displayed if there is an error with the value of the Input.
+ * @returns {JSX.Element} A Text Input with added functionality and styling.
+ */
 
 function Input(props) {
 
@@ -98,7 +119,6 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 5,
         marginHorizontal: 10,
-
     },
     label: {
         fontFamily: 'open-sans-bold',

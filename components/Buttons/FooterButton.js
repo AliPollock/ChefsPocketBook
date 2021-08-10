@@ -1,8 +1,13 @@
 import React from 'react';
 import {View, StyleSheet} from "react-native";
-import CircleButton from "./UIComponents/CircleButton";
-import Colors from "../constants/Colors";
+import CircleButton from "./CircleButton";
+import Colors from "../../constants/Colors";
 
+/**
+ * A footer button component which will hover separate from ScrollViews and will provide extra navigation access for the user.
+ * @param {String} props.iconName    The name of the icon to be displayed on the Button.
+ * @returns {JSX.Element}   A view which will stick to the bottom of the screen place the Button on the right.
+ */
 
 function FooterButton(props) {
     return(

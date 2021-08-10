@@ -12,6 +12,12 @@ const defaultItemValue = {
     name: '', id: 0
 };
 
+/**
+ * A component which is used for a dropdown search which will show suggestions below search bar.
+ * (taken from the react-native-searchable-dropdown package)
+ * I had to incorporate this file into my project so that I could change some features because the package would not allow me to change it with props.
+ */
+
 export default class SearchableDropDown extends Component {
     constructor(props) {
         super(props);

@@ -15,6 +15,12 @@ export const SET_GROUP_RECIPES = 'SET_GROUP_RECIPES';
 export const SET_CURRENT_GROUP_RECIPES = 'SET_CURRENT_GROUP_RECIPES';
 export const DO_NOTHING = 'DO_NOTHING';
 
+/**
+ * Action to create a new group in the database and dispatch another action to add this to the state of the app.
+ * @param {String} groupName The name of the group being created.
+ * @param {String} recipes A string of the recipes in the group.
+ * @param {String} members A string of the members in the group.
+ */
 
 export const createGroup = (
     groupName,
@@ -75,6 +81,12 @@ export const createGroup = (
     };
 };
 
+/**
+ * Action to create a new group in the database and dispatch another action to add this to the state of the app.
+ * @param {String} groupName The name of the group being created.
+ * @param {Object} item An object which holds the details of the user being added.
+ * @param {String} mainCollectionGroupId The id of the group in the main collection.
+ */
 
 export const addMemberToGroup = (item, mainCollectionGroupId, groupName) => {
     const email = item.email
@@ -123,6 +135,12 @@ export const addMemberToGroup = (item, mainCollectionGroupId, groupName) => {
     return {type: ADD_MEMBER_TO_GROUP};
 }
 
+/**
+ * Action which removes the member from the group.
+ * @param {String} userId The id of the user being removed
+ * @param {String} mainCollectionGroupId The id of the group on the main collection
+ */
+
 export const removeMemberFromGroup = (userId, mainCollectionGroupId) => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
@@ -167,6 +185,12 @@ export const removeMemberFromGroup = (userId, mainCollectionGroupId) => {
     }
 }
 
+/**
+ * Action which removes the group from the member collection.
+ * @param {String} userId The id of the user being removed.
+ * @param {String} mainCollectionGroupId The id of the group on the main collection.
+ */
+
 export const removeGroupFromUser = (userId, mainCollectionGroupId) => {
     return async (dispatch, getState) => {
         const token = getState().authenticate.token;
@@ -208,6 +232,13 @@ export const removeGroupFromUser = (userId, mainCollectionGroupId) => {
         dispatch({type: DO_NOTHING});
     }
 }
+
+/**
+ * Action which adds a recipe to a group.
+ * @param {Object} recipe The recipe object being added to the group.
+ * @param {String} mainCollectionGroupId The id of the group on the main collection.
+ */
+
 export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
 
     const id = recipe.Id
@@ -281,6 +312,13 @@ export const addRecipeToGroup = (recipe, mainCollectionGroupId) => {
 
     };
 }
+
+/**
+ *  Action which removes a recipe from a group.
+ * @param {String} groupId The main collection id of the group.
+ * @param {String} recipeId The id of the recipe within the group.
+ */
+
 export const removeRecipeFromGroup = (groupId, recipeId) => {
 
     return async (dispatch, getState) => {
@@ -300,6 +338,10 @@ export const removeRecipeFromGroup = (groupId, recipeId) => {
         dispatch({type: REMOVE_RECIPE_FROM_GROUP, groupId: groupId, recipeId: recipeId});
     };
 }
+
+/**
+ * Action which sets the current user's groups.
+ */
 
 export const setUserGroups = () => {
     return async (dispatch, getState) => {
@@ -339,10 +381,19 @@ export const setUserGroups = () => {
     };
 };
 
+/**
+ * Action which sets the current user's groups. This should be used for realtime search.
+ */
+
 export const setCurrentGroupRecipes = (searchTerm) => {
     let searchTermLowerCase = searchTerm.toString().toLowerCase();
     return {type: SET_CURRENT_GROUP_RECIPES, searchTerm: searchTermLowerCase}
 };
+
+/**
+ * Action which gets all of the members of a group.
+ * @param {String} groupId The main collection id of the group.
+ */
 
 export const getGroupMembers = (groupId) => {
     return async (dispatch, getState) => {
@@ -376,6 +427,11 @@ export const getGroupMembers = (groupId) => {
     };
 
 }
+
+/**
+ * Action which gets all of the recipes for a group.
+ * @param {String} groupId The main collection id of the group.
+ */
 
 export const getGroupRecipes = (groupId) => {
 
@@ -425,6 +481,14 @@ export const getGroupRecipes = (groupId) => {
         };
     };
 };
+
+
+/**
+ * Action which adds a group to a user's collection.
+ * @param {String} mainCollectionId The main collection if of the group
+ * @param {String} groupName The name of the group.
+ * @param {String} userId The main collection id of the user.
+ */
 
 export const addGroupToCollection = (
     mainCollectionId,

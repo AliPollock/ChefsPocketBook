@@ -10,47 +10,57 @@ import {
     Platform,
     TouchableNativeFeedback
 } from 'react-native';
-import FooterButton from "../components/FooterButton";
-import Colors from "../constants/Colors";
-import * as groupActions from "../store/actions/groupAction";
+import FooterButton from "../../components/Buttons/FooterButton";
+import Colors from "../../constants/Colors";
+import * as groupActions from "../../store/actions/groupAction";
 import {useDispatch, useSelector} from "react-redux";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonSmall from "../components/HeaderButtonSmall";
-import DropdownSearch from "../components/DropdownSearch";
+import HeaderButtonSmall from "../../components/Buttons/HeaderButtonSmall";
+import DropdownSearch from "../../components/Inputs/DropdownSearch";
 import AllGroupsScreen from "./AllGroupsScreen";
 import {borderWidth, marginTop} from "styled-system";
-import MyButton from "../components/UIComponents/MyButton";
-import {store} from "../App";
+import MyButton from "../../components/Buttons/MyButton";
+import {store} from "../../App";
 import {MaterialIcons} from "@expo/vector-icons";
-import {addRecipeToGroup} from "../store/actions/groupAction";
-import Card from "../components/UIComponents/Card";
+import {addRecipeToGroup} from "../../store/actions/groupAction";
+import Card from "../../components/Cards/Card";
 import {Rating} from "react-native-ratings";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+
+/**
+ * The screen which displays a particular group page.
+ * @param {object} props.navigation An object which contains navigation data passed from the previous screen.
+ * @returns {JSX.Element} A screen which shows information for a particular group.
+ */
 
 function GroupScreen(props) {
 
     const dispatch = useDispatch();
 
+    //local state for group screen
     const [recipeModalVisible, setRecipeModalVisible] = useState(false);
     const [memberModalVisible, setMemberModalVisible] = useState(false);
 
 
+    //react hooks selecting state slice and storing in variables
     const userRecipes = useSelector(state => state.recipes.userRecipes);
     const allEmail = useSelector(state => state.authenticate.allEmail);
+
     // console.log("groupName: " + props.navigation.getParam("groupName") +", groupId: " + props.navigation.getParam("groupId"))
 
+    //useEffect called once upon initial render
     useEffect(() => {
         dispatch(groupActions.getGroupRecipes(props.navigation.getParam("mainCollectionId")));
         dispatch(groupActions.getGroupMembers(props.navigation.getParam("mainCollectionId")));
-        console.log(JSON.stringify(store.getState()));
+        // console.log(JSON.stringify(store.getState()));
     }, [])
 
-
-
+    //useEffect called upon addRecipe or addMember being called
     useEffect(() => {
         props.navigation.setParams({addRecipe: addRecipe})
         props.navigation.setParams({addMember: addMember})
     }, [addRecipe, addMember]);
+
 
     const addMember = () => {
         setMemberModalVisible(true);
@@ -231,6 +241,11 @@ function GroupScreen(props) {
         </View>
     );
 }
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 GroupScreen.navigationOptions = navData => {
     const addRecipe = navData.navigation.getParam("addRecipe");

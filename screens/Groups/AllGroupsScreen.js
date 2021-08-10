@@ -1,22 +1,23 @@
 import React, {useCallback, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonSmall from "../components/HeaderButtonSmall";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import RecipeScreen from "./RecipeScreen";
+import HeaderButtonSmall from "../../components/Buttons/HeaderButtonSmall";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import RecipeScreen from "../Recipes/RecipeScreen";
 import {useSelector} from "react-redux";
-import GroupCard from "../components/UIComponents/GroupCard";
-import Colors from "../constants/Colors";
+import GroupCard from "../../components/Cards/GroupCard";
+import Colors from "../../constants/Colors";
 import GroupRecipesScreen from "./GroupRecipes";
+
+/**
+ * The Screen which displays all group the user is a member of.
+ * @param {object} props.navigation Navigation information passed from the previous screen.
+ * @returns {JSX.Element} A screen which contains a FlatList of the user's groups.
+ */
 
 function AllGroupsScreen(props) {
 
-    useEffect(() => {
-        props.navigation.setParams({createGroup: createGroup})
-
-    }, [createGroup]);
-
-
+    //React hook which selects a state slice
     const userGroups = useSelector(state => state.groups.userGroups)
 
     const createGroup = useCallback(() => {
@@ -26,8 +27,14 @@ function AllGroupsScreen(props) {
         console.log("pressed");
     }, []);
 
+    //useEffect called on change in createGroup state
+    useEffect(() => {
+        props.navigation.setParams({createGroup: createGroup})
+
+    }, [createGroup]);
+
     function renderGroupItem(itemData) {
-        console.log(itemData);
+        // console.log(itemData);
 
         return (
             <GroupCard
@@ -46,7 +53,7 @@ function AllGroupsScreen(props) {
                 }}
             />
         );
-    };
+    }
 
     return (
         <View style={styles.screen}>
@@ -70,6 +77,11 @@ const styles = StyleSheet.create({
         width: "80%"
     }
 });
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 AllGroupsScreen.navigationOptions = navData => {
     const createGroup = navData.navigation.getParam("createGroup");

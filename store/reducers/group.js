@@ -14,12 +14,22 @@ import React, {useState, useEffect, useCallback, useReducer} from 'react';
 import Group from "../../models/Group";
 import {StackActions as updatedRecipes} from "react-navigation";
 
+/**
+ * Constant used to state the initial state of the state slice.
+ */
+
 const initialState = {
     userGroups: [],
     groupMembers: [],
     groupRecipes: [],
     currentGroupRecipes: []
 }
+
+/**
+ * Reducer function which receives action object and executes state updates based on the type attribute of the action.
+ * @param {Object} state The current state slice.
+ * @param {Object} action The action to be performed with an optional payload.
+ */
 
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -61,7 +71,6 @@ export default (state = initialState, action) => {
                     updatedCurrentGroupRecipes.push(item);
                 }
             }
-
 
             return {
                 ...state,

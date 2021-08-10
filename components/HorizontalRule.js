@@ -1,6 +1,10 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import Colors from "../../constants/Colors";
+import Colors from "../constants/Colors";
+
+/**
+ * A reusable UI component which will be a Horizontal Line to act as a divider.
+ */
 
 function HorizontalRule(props) {
     return (

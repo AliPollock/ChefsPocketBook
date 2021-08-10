@@ -8,11 +8,20 @@ import {
     TouchableNativeFeedback,
     Platform, Dimensions
 } from 'react-native';
-import Card from "./UIComponents/Card";
+import Card from "./Card";
 import {alignItems, flexDirection, fontSize} from "styled-system";
 import {Rating} from "react-native-ratings";
-import Colors from "../constants/Colors";
-import HorizontalRule from "./UIComponents/HorizontalRule";
+import Colors from "../../constants/Colors";
+import HorizontalRule from "../HorizontalRule";
+
+/**
+ * A component which represents a Recipe to be used in a vertical FlatList
+ * @param {function} props.onSelect   A function which is called when the card is touched.
+ * @param {int}       props.rating    An int between from 0-5 which determines the rating for the card.
+ * @param {String}       props.title      An String which holds the title of the Recipe.
+ * @returns {JSX.Element}   A card which represents a group item.
+ * @constructor
+ */
 
 function RecipeCard(props) {
     let TouchableCmp = TouchableOpacity;

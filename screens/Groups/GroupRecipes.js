@@ -1,42 +1,50 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
 import {useDispatch, useSelector} from "react-redux";
-import * as groupActions from "../store/actions/groupAction";
-import RecipeCard from "../components/RecipeCard";
-import SearchInput from "../components/UIComponents/SearchInput";
-import FooterButton from "../components/FooterButton";
+import * as groupActions from "../../store/actions/groupAction";
+import RecipeCard from "../../components/Cards/RecipeCard";
+import SearchInput from "../../components/Inputs/SearchInput";
+import FooterButton from "../../components/Buttons/FooterButton";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import Colors from "../constants/Colors";
-import {store} from "../App";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import Colors from "../../constants/Colors";
+import {store} from "../../App";
+
+/**
+ * The screen which displays all recipes in a given group
+ * @returns {JSX.Element} A screen containing a FlatList of group recipes
+ */
 
 function GroupRecipesScreen(props) {
-    console.log(JSON.stringify(store.getState().groups.groupRecipes));
 
     const dispatch = useDispatch();
+
+    // console.log(JSON.stringify(store.getState().groups.groupRecipes));
+
+
+    //Query database to obtain all group recipes and assign results to global state
     dispatch(groupActions.getGroupRecipes(props.navigation.getParam("mainCollectionId")))
 
     const [searchState, setSearchState] = useState("");
 
+    //useEffect called once upon initial render
     useEffect(() => {
+        //changing app global state to store current group recipes
         dispatch(groupActions.setCurrentGroupRecipes(""));
     }, [])
 
+    //react hook that takes a slice of state and stores it in the groupRecipes variable
     const groupRecipes = useSelector(state => state.groups.currentGroupRecipes);
+
 
     const searchChangeHandler = (text) => {
         setSearchState(text);
-
         dispatch(groupActions.setCurrentGroupRecipes(text));
-        // console.log("searchState in handler:" + searchState)
     }
 
 
-    //factor this function out into its own file
+    //The function which is called for every item in the FlatList
     function renderRecipeItem(itemData) {
-
-        //this will be need when it is refactored into its own file
-        // const userRecipes = useSelector(state => state.recipes.userRecipes);
 
         const isUserRecipe = true;
 
@@ -77,7 +85,7 @@ function GroupRecipesScreen(props) {
                 rating={itemData.item.rating}
                 description={itemData.item.description}/>
         );
-    };
+    }
 
 
     return (
@@ -104,7 +112,12 @@ function GroupRecipesScreen(props) {
             />
         </View>
     );
-};
+}
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 GroupRecipesScreen.navigationOptions = navData => {
     return {

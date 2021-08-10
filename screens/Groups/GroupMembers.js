@@ -9,45 +9,40 @@ import {
     Platform,
     TouchableNativeFeedback, Dimensions, Alert
 } from 'react-native';
-import {store} from "../App";
+import {store} from "../../App";
 import {useDispatch, useSelector} from "react-redux";
-import * as groupActions from "../store/actions/groupAction";
-import RecipeCard from "../components/RecipeCard";
-import SearchInput from "../components/UIComponents/SearchInput";
-import FooterButton from "../components/FooterButton";
+import * as groupActions from "../../store/actions/groupAction";
+import RecipeCard from "../../components/Cards/RecipeCard";
+import SearchInput from "../../components/Inputs/SearchInput";
+import FooterButton from "../../components/Buttons/FooterButton";
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
-import Colors from "../constants/Colors";
-import Card from "../components/UIComponents/Card";
-import MyButton from "../components/UIComponents/MyButton";
+import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
+import Colors from "../../constants/Colors";
+import Card from "../../components/Cards/Card";
+import MyButton from "../../components/Buttons/MyButton";
+
+/**
+ * The screen which displays all members in a given group
+ * @returns {JSX.Element} A screen containing a FlatList of group members
+ */
 
 function GroupMembersScreen(props) {
-    console.log(JSON.stringify(store.getState()));
+
 
     const dispatch = useDispatch();
-    // dispatch(groupActions.getGroupMembers(props.navigation.getParam("mainCollectionId")));
 
-
-
+    //react hook that takes a slice of state and stores it in the groupMembers variable
     const groupMembers = useSelector(state => state.groups.groupMembers);
 
 
-
-    //factor this function out into its own file
+    // The function which is called for every item in the FlatList
     function renderRecipeItem(itemData) {
-
-        //this will be need when it is refactored into its own file
-        // const userMembers = useSelector(state => state.Members.userMembers);
 
         let TouchableCmp = TouchableOpacity;
 
         if (Platform.OS === 'android' && Platform.Version >= 21) {
             TouchableCmp = TouchableNativeFeedback;
         }
-
-        let PotentialButton;
-
-
 
         return (
             <Card style={styles.card}>
@@ -78,7 +73,7 @@ function GroupMembersScreen(props) {
                 </View>
             </Card>
         );
-    };
+    }
 
 
     return (
@@ -101,7 +96,12 @@ function GroupMembersScreen(props) {
             />
         </View>
     );
-};
+}
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 GroupMembersScreen.navigationOptions = navData => {
     return {
@@ -118,6 +118,7 @@ GroupMembersScreen.navigationOptions = navData => {
         )
     };
 };
+
 
 const styles = StyleSheet.create({
     screen: {

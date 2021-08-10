@@ -2,38 +2,43 @@ import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Button, ScrollView, FlatList} from 'react-native';
 import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import Colors from "../constants/Colors";
-import FooterButton from "../components/FooterButton";
-import HeaderButtonLarge from "../components/HeaderButtonLarge";
+import FooterButton from "../components/Buttons/FooterButton";
+import HeaderButtonLarge from "../components/Buttons/HeaderButtonLarge";
 import * as recipeActions from "../store/actions/recipeAction";
 import * as groupActions from "../store/actions/groupAction";
 import * as authActions from "../store/actions/authAction";
 import {useDispatch, useSelector} from "react-redux";
 import {store} from "../App";
-import HorizontalRecipeCard from "../components/UIComponents/HorizontaRecipeCard";
+import HorizontalRecipeCard from "../components/Cards/HorizontaRecipeCard";
 import {Ionicons} from "@expo/vector-icons";
 import {justifyContent} from "styled-system";
 import HorizontalFlatList from "../components/HorizontalFlatList";
-import GroupCard from "../components/UIComponents/GroupCard";
-import HorizontalGroupCard from "../components/UIComponents/HorizontalGroupCard";
+import GroupCard from "../components/Cards/GroupCard";
+import HorizontalGroupCard from "../components/Cards/HorizontalGroupCard";
+
+/**
+ * The home screen of the which displays the user's data and provides routes around the app.
+ * @param {object} props.navigation Navigation information passed from the previous screen.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 
 function HomeScreen(props) {
     const dispatch = useDispatch();
 
+    //local state for home screen
     const [userRecipes, setUserRecipes] = useState(useSelector(state => state.recipes.userRecipes));
     const [userGroups, setUserGroups] = useState(useSelector (state => state.groups.userGroups))
-    // console.log("user Recipes: " + JSON.stringify(userRecipes));
-    // console.log("user Groups: " + JSON.stringify(userGroups));
 
+    //useEffect which is called once upon initial render
     useEffect(() => {
         dispatch(recipeActions.getUserRecipes())
-        // console.log("user Recipes: " + JSON.stringify(userRecipes));
         dispatch(recipeActions.getAllRecipes());
         dispatch(groupActions.setUserGroups());
         dispatch(authActions.getAllEmails());
-        console.log(JSON.stringify(store.getState()));
-        // userRecipes(store.getState().recipes.userRecipes)
     }, [])
 
+    //this is triggered upon a change in the store. Required to render the FlatLists on the home page
    store.subscribe(() => {
        setUserRecipes(store.getState().recipes.userRecipes)
        setUserGroups(store.getState().groups.userGroups)
@@ -41,10 +46,8 @@ function HomeScreen(props) {
 
 
 
+    // The function which is called for every item in the recipe FlatList
     function renderUserRecipeItem(itemData) {
-
-        //this will be need when it is refactored into its own file
-        // const userRecipes = useSelector(state => state.recipes.userRecipes);
 
         const isUserRecipe = true;
 
@@ -85,8 +88,8 @@ function HomeScreen(props) {
         );
     }
 
+    // The function which is called for every item in the group FlatList
     function renderUserGroupItem(itemData) {
-        // console.log(itemData);
 
         return (
             <HorizontalGroupCard
@@ -105,7 +108,7 @@ function HomeScreen(props) {
                 }}
             />
         );
-    };
+    }
 
 
     return (
@@ -165,6 +168,11 @@ function HomeScreen(props) {
         </View>
     );
 }
+
+/**
+ * Assigning functionality and buttons to the header of the screen.
+ * @param navData The navigation data for the screen.
+ */
 
 HomeScreen.navigationOptions = navData => {
     return {
