@@ -9,7 +9,7 @@ import * as groupActions from "../store/actions/groupAction";
 import * as authActions from "../store/actions/authAction";
 import {useDispatch, useSelector} from "react-redux";
 import {store} from "../App";
-import HorizontalRecipeCard from "../components/Cards/HorizontaRecipeCard";
+import HorizontalRecipeCard from "../components/Cards/HorizontalRecipeCard";
 import {Ionicons} from "@expo/vector-icons";
 import {justifyContent} from "styled-system";
 import HorizontalFlatList from "../components/HorizontalFlatList";
@@ -164,6 +164,7 @@ function HomeScreen(props) {
                         routeName: 'EditRecipe'
                     });
                 }}
+                position="right"
             />
         </View>
     );
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
         marginBottom: '5%'
     },
     title: {
+        alignSelf: 'center',
         marginTop: '5%',
         color: Colors.primaryColor,
         fontSize: 40,

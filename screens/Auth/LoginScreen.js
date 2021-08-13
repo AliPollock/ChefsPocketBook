@@ -217,11 +217,6 @@ function LoginScreen(props) {
                     </ScrollView>
                 </View>
             </KeyboardAvoidingView>
-            <View style={styles.iconContainer}>
-                <MaterialCommunityIcons.Button name={'facebook' } size={40} style={{justifyContent: 'center', padding: 5}}/>
-                <MaterialCommunityIcons.Button name={'google' } backgroundColor={'red'} size={40} style={{justifyContent: 'center', padding: 5}} />
-                <MaterialCommunityIcons.Button name={'twitter' } backgroundColor={'#00acee'} size={40} style={{justifyContent: 'center', padding: 5}} />
-            </View>
         </View>
     );
 }

@@ -102,6 +102,16 @@ function AllRecipesScreen(props) {
                 renderItem={renderRecipeItem}
             />
             <FooterButton
+                iconName={'plus'}
+                size={40}
+                onSelect={() =>{
+                    props.navigation.navigate({
+                        routeName: 'EditRecipe'
+                    });
+                }}
+                position="right"
+            />
+            <FooterButton
                 iconName={'home'}
                 size={40}
                 onSelect={() =>{
@@ -109,6 +119,7 @@ function AllRecipesScreen(props) {
                         routeName: 'Home'
                     });
                 }}
+                position="left"
             />
         </View>
     );

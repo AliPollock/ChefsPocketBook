@@ -11,7 +11,7 @@ import Colors from "../../constants/Colors";
 
 function FooterButton(props) {
     return(
-        <View style={styles.footer}>
+        <View style={props.position === "right" ? styles.rightFooter : styles.leftFooter}>
             <View style={styles.buttonContainer}>
                 <CircleButton
                     iconName={props.iconName}
@@ -24,10 +24,16 @@ function FooterButton(props) {
 };
 
 const styles = StyleSheet.create({
-    footer: {
+    rightFooter: {
         position: "absolute",
         bottom: 0,
         alignSelf: "flex-end",
+        flexWrap: "wrap"
+    },
+    leftFooter: {
+        position: "absolute",
+        bottom: 0,
+        alignSelf: "flex-start",
         flexWrap: "wrap"
     },
     buttonContainer: {

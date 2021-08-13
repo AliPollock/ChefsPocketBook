@@ -7,7 +7,7 @@ import {
     Button,
     FlatList,
     Platform,
-    TouchableNativeFeedback, Dimensions, Alert
+    TouchableNativeFeedback, Dimensions, Alert, Modal
 } from 'react-native';
 import {store} from "../../App";
 import {useDispatch, useSelector} from "react-redux";
@@ -20,6 +20,7 @@ import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
 import Colors from "../../constants/Colors";
 import Card from "../../components/Cards/Card";
 import MyButton from "../../components/Buttons/MyButton";
+import DropdownSearch from "../../components/Inputs/DropdownSearch";
 
 /**
  * The screen which displays all members in a given group
@@ -33,6 +34,14 @@ function GroupMembersScreen(props) {
 
     //react hook that takes a slice of state and stores it in the groupMembers variable
     const groupMembers = useSelector(state => state.groups.groupMembers);
+
+    //member modal
+    const [memberModalVisible, setMemberModalVisible] = useState(false);
+    const allEmail = useSelector(state => state.authenticate.allEmail);
+
+    const addMember = () => {
+        setMemberModalVisible(true);
+    }
 
 
     // The function which is called for every item in the FlatList
@@ -85,6 +94,66 @@ function GroupMembersScreen(props) {
                 keyExtractor={item => item.userId}
                 renderItem={renderRecipeItem}
             />
+            <Modal
+                visible={memberModalVisible}
+                animationType="slide"
+                style={styles.modal}
+            >
+                <DropdownSearch
+                    multi={true}
+                    onItemSelect={(item) => {
+                        dispatch(groupActions.addMemberToGroup(
+                            item,
+                            props.navigation.getParam('mainCollectionId'),
+                            props.navigation.getParam('groupName')
+                        ));
+                        setMemberModalVisible(false);
+                        Alert.alert(item.email + " member added to the group.")
+                    }}
+                    containerStyle={{backgroundColor: Colors.accentColor}}
+                    onRemoveItem={() => {
+                        console.log("item removed")
+                    }}
+                    itemStyle={{
+                        backgroundColor: Colors.accentColor,
+                        padding: 10,
+                        marginTop: 2,
+                        borderColor: Colors.primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }}
+                    targetField="email"
+                    itemTextStyle={{color: '#ffffff'}}
+                    itemsContainerStyle={{ maxHeight: 140 }}
+                    items={allEmail}
+                    textInputProps={
+                        {
+                            placeholder: "member email address",
+                            placeholderTextColor: 'white',
+                            underlineColorAndroid: "transparent",
+                            color: 'white',
+                            textAlign: 'center',
+                            style: {
+                                backgroundColor: Colors.accentColor,
+                                borderColor: Colors.primaryColor,
+                                borderWidth: 2,
+                                borderRadius:5
+                            }
+                        }
+                    }
+                    listProps={
+                        {
+                            nestedScrollEnabled: true,
+                        }
+                    }
+                    setSort={(item, searchedText)=> item.email.toLowerCase().startsWith(searchedText.toLowerCase())}
+                />
+                <View style={styles.modalButton}>
+                    <View style={styles.buttonContainer}>
+                        <MyButton title={"cancel"} onPress={() => setMemberModalVisible(false)}/>
+                    </View>
+                </View>
+            </Modal>
             <FooterButton
                 iconName={'home'}
                 size={40}
@@ -93,6 +162,14 @@ function GroupMembersScreen(props) {
                         routeName: 'Home'
                     });
                 }}
+            />
+            <FooterButton
+                iconName={'add-user'}
+                size={40}
+                onSelect={() =>{
+                    addMember()
+                }}
+                position="right"
             />
         </View>
     );
@@ -105,17 +182,7 @@ function GroupMembersScreen(props) {
 
 GroupMembersScreen.navigationOptions = navData => {
     return {
-        headerTitle: 'Members',
-        headerLeft: () => (
-            <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
-                <Item
-                    title="Logout"
-                    iconName='ios-menu'
-                    onPress={() => {
-                        navData.navigation.toggleDrawer();
-                    }}/>
-            </HeaderButtons>
-        )
+        headerTitle: 'Members'
     };
 };
 
@@ -162,6 +229,16 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderColor: Colors.primaryColor,
         borderWidth:2
+    },
+    modalButton: {
+        backgroundColor: Colors.accentColor,
+        flex: 1
+    },
+    modal: {
+        marginTop: '10%',
+        maxHeight: "50%",
+        backgroundColor: Colors.accentColor,
+        flex: 1
     }
 });
 

@@ -20,6 +20,8 @@ function CreateGroupScreen(props) {
     const [inputIsValid, setInputIsValid] = useState(false);
 
     const inputChangeHandler = (text) => {
+        console.log(text)
+        console.log(text.length)
         setInput(text)
         if (text.length > 3) {
             setInputIsValid(true);
@@ -30,8 +32,12 @@ function CreateGroupScreen(props) {
 
     // function which handles a create action event
     const createHandler = useCallback( () => {
-        dispatch(groupActions.createGroup(input, "", ""))
-        props.navigation.goBack();
+        if(inputIsValid) {
+            dispatch(groupActions.createGroup(input, "", ""))
+            props.navigation.goBack();
+        } else {
+            Alert.alert("Please enter a valid group name")
+        }
     }, [dispatch, input]);
 
     return (
@@ -46,11 +52,6 @@ function CreateGroupScreen(props) {
                 color={Colors.primaryColor}
                 onPress={() => {
                     dispatch(createHandler)
-                    // if (inputIsValid) {
-                    //
-                    // } else {
-                    //     Alert.alert("Invalid Group Name","Please ensure group name is at least four characters in length.", "ok")
-                    // }
                 }
                 }/>
         </View>

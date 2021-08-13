@@ -471,6 +471,7 @@ function EditRecipeScreen(props) {
                         routeName: 'Home'
                     });
                 }}
+                position="right"
             />
         </View>
     );

@@ -229,14 +229,33 @@ function GroupScreen(props) {
                     </View>
                 </View>
             </Modal>
+            <View style={styles.addUserContainer}>
             <FooterButton
-                iconName={'plus'}
+                iconName={'add-user'}
+                size={40}
+                onSelect={() =>{
+                    addMember()
+                }}
+                position="right"
+            />
+            </View>
+            <FooterButton
+                iconName={'add-to-list'}
+                size={40}
+                onSelect={() =>{
+                    addRecipe()
+                }}
+                position="right"
+            />
+            <FooterButton
+                iconName={'home'}
                 size={40}
                 onSelect={() =>{
                     props.navigation.navigate({
-                        routeName: 'EditRecipe'
+                        routeName: 'Home'
                     });
                 }}
+                position="left"
             />
         </View>
     );
@@ -253,35 +272,7 @@ GroupScreen.navigationOptions = navData => {
     const addMember = navData.navigation.getParam("addMember");
 
     return{
-        headerTitle: groupName,
-        headerRight: () => (
-            <HeaderButtons
-                HeaderButtonComponent={HeaderButtonSmall}>
-
-                <MaterialIcons
-                    title='addRecipe'
-                    onPress={addRecipe}
-                    name="note-add"
-                    size={40}
-                    color="white"
-                />
-                <Item
-                    title='addMember'
-                    iconName={'md-person-add'}
-                    onPress={addMember}
-                />
-            </HeaderButtons>
-        ),
-        headerLeft: () => (
-            <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
-                <Item
-                    title="Logout"
-                    iconName='ios-menu'
-                    onPress={() => {
-                        navData.navigation.toggleDrawer();
-                    }}/>
-            </HeaderButtons>
-        )
+        headerTitle: groupName
     };
 }
 
@@ -307,9 +298,15 @@ const styles = StyleSheet.create({
         borderRadius:5,
         margin: 20
     },
+    addUserContainer: {
+        bottom: 75,
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        width: '100%'
+    },
     card: {
         height: '25%',
-        marginTop: '30%',
+        marginTop: '15%',
         width: '80%',
         alignItems: 'center'
     },

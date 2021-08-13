@@ -98,13 +98,24 @@ function UserRecipesScreen(props) {
                 renderItem={renderRecipeItem}
             />
             <FooterButton
+                iconName={'plus'}
+                size={40}
+                onSelect={() =>{
+                    props.navigation.navigate({
+                    routeName: 'EditRecipe'
+                    });
+                }}
+                position="right"
+            />
+            <FooterButton
                 iconName={'home'}
                 size={40}
                 onSelect={() =>{
                     props.navigation.navigate({
-                    routeName: 'Home'
+                        routeName: 'Home'
                     });
                 }}
+                position="left"
             />
         </View>
     );

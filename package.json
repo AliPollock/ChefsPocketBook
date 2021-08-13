@@ -32,6 +32,7 @@
     "react-dom": "^16.13.1",
     "react-native": "^0.63.0",
     "react-native-autogrow-textinput": "^5.4.0",
+    "react-native-circular-action-menu": "^0.5.0",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-paper": "^4.9.2",
     "react-native-paper-dropdown": "^1.0.6",

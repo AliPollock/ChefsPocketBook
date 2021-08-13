@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Button, FlatList, Alert, Modal} from 'react-native';
 import {useDispatch, useSelector} from "react-redux";
 import * as groupActions from "../../store/actions/groupAction";
 import RecipeCard from "../../components/Cards/RecipeCard";
@@ -9,6 +9,8 @@ import {HeaderButtons, Item} from "react-navigation-header-buttons";
 import HeaderButtonLarge from "../../components/Buttons/HeaderButtonLarge";
 import Colors from "../../constants/Colors";
 import {store} from "../../App";
+import DropdownSearch from "../../components/Inputs/DropdownSearch";
+import MyButton from "../../components/Buttons/MyButton";
 
 /**
  * The screen which displays all recipes in a given group
@@ -26,6 +28,14 @@ function GroupRecipesScreen(props) {
     dispatch(groupActions.getGroupRecipes(props.navigation.getParam("mainCollectionId")))
 
     const [searchState, setSearchState] = useState("");
+
+    //recipe modal
+    const [recipeModalVisible, setRecipeModalVisible] = useState(false);
+    const userRecipes = useSelector(state => state.recipes.userRecipes);
+
+    const addRecipe = () => {
+        setRecipeModalVisible(true);
+    }
 
     //useEffect called once upon initial render
     useEffect(() => {
@@ -101,6 +111,70 @@ function GroupRecipesScreen(props) {
                 keyExtractor={item => item.id}
                 renderItem={renderRecipeItem}
             />
+            <Modal
+                visible={recipeModalVisible}
+                animationType="slide"
+            >
+                <DropdownSearch
+                    multi={true}
+                    onItemSelect={(item) => {
+                        console.log(JSON.stringify(item));
+                        dispatch(groupActions.addRecipeToGroup(item, props.navigation.getParam('mainCollectionId')));
+                        setRecipeModalVisible(false);
+                        Alert.alert(item.title + " recipe added to the group.")
+                    }}
+                    containerStyle={{backgroundColor: Colors.accentColor}}
+                    onRemoveItem={() => {
+                        console.log("item removed")
+                    }}
+                    itemStyle={{
+                        backgroundColor: Colors.accentColor,
+                        padding: 10,
+                        marginTop: 2,
+                        borderColor: Colors.primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }}
+                    targetField="title"
+                    itemTextStyle={{color: '#ffffff'}}
+                    itemsContainerStyle={{ maxHeight: 140 }}
+                    items={userRecipes}
+                    textInputProps={
+                        {
+                            placeholder: "recipe name",
+                            placeholderTextColor: 'white',
+                            underlineColorAndroid: "transparent",
+                            color: 'white',
+                            textAlign: 'center',
+                            style: {
+                                backgroundColor: Colors.accentColor,
+                                borderColor: Colors.primaryColor,
+                                borderWidth: 2,
+                                borderRadius:5
+                            }
+                        }
+                    }
+                    listProps={
+                        {
+                            nestedScrollEnabled: true,
+                        }
+                    }
+                    setSort={(item, searchedText)=> item.title.toLowerCase().startsWith(searchedText.toLowerCase())}
+                />
+                <View style={styles.modal}>
+                    <View style={styles.buttonContainer}>
+                        <MyButton title={"cancel"} onPress={() => setRecipeModalVisible(false)}/>
+                    </View>
+                </View>
+            </Modal>
+            <FooterButton
+                iconName={'add-to-list'}
+                size={40}
+                onSelect={() =>{
+                    addRecipe()
+                }}
+                position="right"
+            />
             <FooterButton
                 iconName={'home'}
                 size={40}
@@ -109,6 +183,7 @@ function GroupRecipesScreen(props) {
                         routeName: 'Home'
                     });
                 }}
+                position="left"
             />
         </View>
     );
@@ -121,17 +196,7 @@ function GroupRecipesScreen(props) {
 
 GroupRecipesScreen.navigationOptions = navData => {
     return {
-        headerTitle: 'Recipes',
-        headerLeft: () => (
-            <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
-                <Item
-                    title="Logout"
-                    iconName='ios-menu'
-                    onPress={() => {
-                        navData.navigation.toggleDrawer();
-                    }}/>
-            </HeaderButtons>
-        )
+        headerTitle: 'Recipes'
     };
 };
 
@@ -145,6 +210,10 @@ const styles = StyleSheet.create({
     list: {
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    modal: {
+        backgroundColor: Colors.accentColor,
+        flex: 1
     }
 });
 

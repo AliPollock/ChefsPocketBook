@@ -5,8 +5,10 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    Keyboard
+    Keyboard, StyleSheet
 } from 'react-native';
+import Colors from "../../constants/Colors";
+import {maxHeight} from "styled-system";
 
 const defaultItemValue = {
     name: '', id: 0
@@ -236,7 +238,7 @@ export default class SearchableDropDown extends Component {
         return (
             <View
                 keyboardShouldPersist="always"
-                style={{ ...this.props.containerStyle }}
+                style={this.styles.containerStyle }
             >
                 { this.renderSelectedItems() }
                 { this.renderTextInput() }
@@ -273,4 +275,12 @@ export default class SearchableDropDown extends Component {
             </View>
         }
     }
+
+    styles = StyleSheet.create({
+        containerStyle: {
+            backgroundColor: Colors.accentColor,
+            maxHeight: '50%',
+            paddingTop: '20%'
+        }
+    })
 }

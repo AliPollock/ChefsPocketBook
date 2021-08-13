@@ -8,6 +8,7 @@ import {useSelector} from "react-redux";
 import GroupCard from "../../components/Cards/GroupCard";
 import Colors from "../../constants/Colors";
 import GroupRecipesScreen from "./GroupRecipes";
+import FooterButton from "../../components/Buttons/FooterButton";
 
 /**
  * The Screen which displays all group the user is a member of.
@@ -63,6 +64,26 @@ function AllGroupsScreen(props) {
             keyExtractor={item => item.id}
             renderItem={renderGroupItem}
             />
+        <FooterButton
+            iconName={'add-user'}
+            size={40}
+            onSelect={() =>{
+                props.navigation.navigate({
+                    routeName: 'CreateGroup'
+                });
+            }}
+            position="right"
+        />
+        <FooterButton
+            iconName={'home'}
+            size={40}
+            onSelect={() =>{
+                props.navigation.navigate({
+                    routeName: 'Home'
+                });
+            }}
+            position="left"
+        />
         </View>
     );
 }
@@ -91,19 +112,6 @@ AllGroupsScreen.navigationOptions = navData => {
 
     return{
         headerTitle: "My Groups",
-        headerRight: () => (
-            <HeaderButtons
-                HeaderButtonComponent={HeaderButtonSmall}>
-
-                <Item
-                    title='CreateGroup'
-                    iconName={'add'}
-                    onPress={createGroup}
-                />
-            </HeaderButtons>
-
-
-        ),
         headerLeft: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButtonLarge}>
                 <Item

@@ -1,6 +1,8 @@
 {
   "name": "ChefsPocketBook",
   "expo": {
-    "sdkVersion": "42.0.0"
+    "sdkVersion": "42.0.0",
+    "orientation": "portrait"
   }
 }
+
